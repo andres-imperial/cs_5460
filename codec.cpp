@@ -12,7 +12,18 @@
 
 namespace codec
 {
-  std::string columnarTransposition(std::string key, std::string plaintext)
+  std::string xorEncrypt(std::string key, std::string text)
+  {
+    // TODO
+  }
+
+  std::string xorDecrypt(std::string key, std::string text)
+  {
+    // TODO
+  }
+
+  std::string columnarTranspositionEncrypt(std::string key,
+                                           std::string plaintext)
   {
     std::vector<std::string> columns(key.size());
     for (int i = 0; i < key.size(); ++i)
@@ -42,6 +53,12 @@ namespace codec
     return result;
   }
 
+  std::string columnarTranspositionDecrypt(std::string derivedKey,
+                                           std::string plaintext)
+  {
+    // TODO:
+  }
+
   std::string oneTimePad(std::string key)
   {
     std::string result;
@@ -64,8 +81,18 @@ namespace codec
   {
     auto derivedKey = oneTimePad(firstKey);
 
-    auto ciphertext = columnarTransposition(derivedKey, plaintext);
+    auto ciphertext = columnarTranspositionEncrypt(derivedKey, plaintext);
+
+    // TODO:
+    // ciphertext = xorEncrypt(secondKey, ciphertext);
 
     return ciphertext;
+  }
+
+  std::string decrypt(std::string ciphertext,
+                      std::string firstKey,
+                      std::string secondKey)
+  {
+    // TODO:
   }
 }

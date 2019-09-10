@@ -25,7 +25,19 @@ namespace codec
                       std::string firstKey,
                       std::string secondKey);
 
-  std::string columnarTransposition(std::string derivedKey, std::string plaintext);
+  std::string decrypt(std::string ciphertext,
+                      std::string firstKey,
+                      std::string secondKey);
+
+  std::string columnarTranspositionEncrypt(std::string derivedKey,
+                                           std::string plaintext);
+
+  std::string columnarTranspositionDecrypt(std::string derivedKey,
+                                           std::string plaintext);
+
+  std::string xorEncrypt(std::string key, std::string text);
+
+  std::string xorDecrypt(std::string key, std::string text);
 }
 
 #endif
