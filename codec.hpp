@@ -3,6 +3,8 @@
 // Assignment 1
 // Group:
 // Andres Imperial
+// Stephanie Gonzales
+// Jake Hadley
 // ============================================================================
 
 #ifndef CODEC_HPP
@@ -19,7 +21,7 @@ namespace codec
                                      {'D', '1', '8', 'G', 'C', '6'},
                                      {'9', 'I', 'S', '5', 'T', 'L'}};
 
-  std::string oneTimePad(std::string key);
+  std::string ploySquare(std::string key);
 
   std::string encrypt(std::string plaintext,
                       std::string firstKey,
@@ -33,11 +35,11 @@ namespace codec
                                            std::string plaintext);
 
   std::string columnarTranspositionDecrypt(std::string derivedKey,
-                                           std::string plaintext);
+                                           std::string ciphertext);
 
-  std::string xorEncrypt(std::string key, std::string text);
+  std::string oneTimePadEncrypt(std::string key, std::string text);
 
-  std::string xorDecrypt(std::string key, std::string text);
+  std::string oneTimePadDecrypt(std::string key, std::string text);
 }
 
 #endif

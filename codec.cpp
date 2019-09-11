@@ -12,14 +12,20 @@
 
 namespace codec
 {
-  std::string xorEncrypt(std::string key, std::string text)
+  std::string oneTimePadEncrypt(std::string key, std::string text)
   {
     // TODO
   }
 
-  std::string xorDecrypt(std::string key, std::string text)
+  std::string oneTimePadDecrypt(std::string key, std::string text)
   {
-    // TODO
+    // TODO:
+    // Break ciphertext into 2 digit numbers
+    // Reverse XOR
+    // Use XOR result to get characters from poly Square
+    //   This should be the call to polySquare()
+    //
+    // return intermediateText
   }
 
   std::string columnarTranspositionEncrypt(std::string key,
@@ -54,12 +60,23 @@ namespace codec
   }
 
   std::string columnarTranspositionDecrypt(std::string derivedKey,
-                                           std::string plaintext)
+                                           std::string ciphertext)
   {
     // TODO:
+    // Take ciphertext size divide by size of key (ceiling)
+    // Check if index of key(alpha order) + size of key * prevResult >= size of
+    // ciphertext
+    //
+    // if it is then take previousResult - 1 characters instead
+    //
+    // then reconstruct in result string by taking subsequent indices of each
+    // substring with regard to key alpha order, assoc with map for easy work
+    //
+    // return plaintext
   }
 
-  std::string oneTimePad(std::string key)
+  // Takes indices and gets letters
+  std::string ploySquare(std::string key)
   {
     std::string result;
     result.resize(key.size() / 2);
@@ -79,12 +96,14 @@ namespace codec
                       std::string firstKey,
                       std::string secondKey)
   {
-    auto derivedKey = oneTimePad(firstKey);
+    auto derivedKey = ploySquare(firstKey);
+
+    printf("derivedKey: %s\n", derivedKey.c_str());
 
     auto ciphertext = columnarTranspositionEncrypt(derivedKey, plaintext);
 
     // TODO:
-    // ciphertext = xorEncrypt(secondKey, ciphertext);
+    // ciphertext = oneTimePadEncrypt(secondKey, ciphertext);
 
     return ciphertext;
   }
@@ -94,5 +113,11 @@ namespace codec
                       std::string secondKey)
   {
     // TODO:
+    // intermediateText = oneTimePadDecrypt(secondKey, cipherText)
+    //
+    // auto derivedKey = polySquare(firstKey);
+    // plaintext = columnarTranspositionDecrypt(intermediateText, derivedKey)
+    //
+    // return plaintext
   }
 }
