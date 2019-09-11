@@ -1,8 +1,10 @@
 // ============================================================================
 // Computer Security
 // Assignment 1
-// Group:
+// Group: Alice and the Foobars
 // Andres Imperial
+// Stephanie Gonzales
+// Jake Hadley
 // ============================================================================
 
 #include <vector>
