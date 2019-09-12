@@ -9,6 +9,8 @@
 
 #include <vector>
 #include <map>
+#include <bitset>
+#include <iostream> 
 
 #include "codec.hpp"
 
@@ -16,18 +18,36 @@ namespace codec
 {
   std::string oneTimePadEncrypt(std::string key, std::string text)
   {
-    // TODO
+    std::string polyIndices = reversePolySquare(text);
+	
+	std::string encryptText;
+	
+	for (int i = 0; i < polyIndices.size(); i+=2)
+	{
+		std::string subStr = polyIndices.substr(i, 2);
+		int subInt = std::stoi(subStr);
+		std::bitset<6> xorBits = std::bitset<6>(subInt)^=std::bitset<6>(std::stoi(key));
+		encryptText = encryptText + binaryToDecimal(xorBits.to_string());
+	}
+	return encryptText;
   }
 
   std::string oneTimePadDecrypt(std::string key, std::string text)
   {
-    // TODO:
-    // Break ciphertext into 2 digit numbers
-    // Reverse XOR
-    // Use XOR result to get characters from poly Square
-    //   This should be the call to polySquare()
-    //
-    // return intermediateText
+	  std::string intermediateText;
+	  std::string polyIndices;
+	  
+	  for (int i = 0; i < text.size(); i+=2)
+	  {
+		std::string subStr = text.substr(i, 2);
+		int subInt = std::stoi(subStr);
+		std::bitset<6> xorBits = std::bitset<6>(subInt)^=std::bitset<6>(std::stoi(key));
+		polyIndices = polyIndices + binaryToDecimal(xorBits.to_string());
+	  }
+	  
+	  intermediateText = ploySquare(polyIndices);
+	  
+	return intermediateText;
   }
 
   std::string columnarTranspositionEncrypt(std::string key,
@@ -93,6 +113,57 @@ namespace codec
 
     return result;
   }
+  
+  std::string reversePolySquare(std::string text)
+  {
+	  std::string polyText;
+	  
+	  for (int i = 0; i < text.size(); ++i)
+	  {
+		  char c = text[i];
+		  for (int i = 0; i < 6; i++)
+		  {
+			  for (int j = 0; j < 6; j++)
+			  {
+				  if (polybiusSquare[i][j] == c)
+				  {
+					  std::string indices = std::to_string(i) + std::to_string(j);
+					  polyText = polyText + indices;
+				  }
+
+			  }
+		  }
+	  }
+	
+	return polyText;
+  }
+  
+  std::string binaryToDecimal(std::string bin)
+  {
+	int binNum = std::stoi(bin);
+	int decvalue = 0; 
+	
+    int base = 1; 
+  
+    int temp = binNum; 
+    while (temp) { 
+        int lastDigit = temp % 10; 
+        temp = temp / 10; 
+  
+        decvalue += lastDigit * base; 
+  
+        base = base * 2; 
+    } 
+
+	if(decvalue < 10)
+	{
+		return "0" + std::to_string(decvalue);
+	}
+	else
+	{
+		return std::to_string(decvalue);
+	}
+  }
 
   std::string encrypt(std::string plaintext,
                       std::string firstKey,
@@ -103,9 +174,10 @@ namespace codec
     printf("derivedKey: %s\n", derivedKey.c_str());
 
     auto ciphertext = columnarTranspositionEncrypt(derivedKey, plaintext);
+	
+	printf("intermediate text: %s\n", ciphertext.c_str());
 
-    // TODO:
-    // ciphertext = oneTimePadEncrypt(secondKey, ciphertext);
+    ciphertext = oneTimePadEncrypt(secondKey, ciphertext);
 
     return ciphertext;
   }
@@ -114,12 +186,14 @@ namespace codec
                       std::string firstKey,
                       std::string secondKey)
   {
-    // TODO:
-    // intermediateText = oneTimePadDecrypt(secondKey, cipherText)
+    // DONE:
+     std::string intermediateText = oneTimePadDecrypt(secondKey, ciphertext);
+	// TODO:
     //
     // auto derivedKey = polySquare(firstKey);
     // plaintext = columnarTranspositionDecrypt(intermediateText, derivedKey)
     //
-    // return plaintext
+    // return plaintext <-- correct return (below return is just for testing)
+	return intermediateText;
   }
 }
