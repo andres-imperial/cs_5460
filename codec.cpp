@@ -11,6 +11,7 @@
 #include <map>
 
 #include "codec.hpp"
+#include <iostream>
 
 namespace codec
 {
@@ -64,17 +65,40 @@ namespace codec
   std::string columnarTranspositionDecrypt(std::string derivedKey,
                                            std::string ciphertext)
   {
-    // TODO:
-    // Take ciphertext size divide by size of key (ceiling)
-    // Check if index of key(alpha order) + size of key * prevResult >= size of
-    // ciphertext
-    //
-    // if it is then take previousResult - 1 characters instead
-    //
-    // then reconstruct in result string by taking subsequent indices of each
-    // substring with regard to key alpha order, assoc with map for easy work
-    //
-    // return plaintext
+    int blockSize = std::ceil((double)ciphertext.size()/derivedKey.size());
+    std::string sortedKey = derivedKey;
+    std::sort(sortedKey.begin(), sortedKey.end());
+
+    std::map<char, std::string> orderedColumns;
+    int positionInCipherText = 0;
+    std::vector<std::string> sortedStrings(derivedKey.size());
+    for (int index = 0; index < sortedKey.size(); ++index)
+    {
+      char currCharInSortedKey = sortedKey.at(index);
+      auto columnIndex = derivedKey.find(currCharInSortedKey);
+      derivedKey[columnIndex] = '+';
+      if ((sortedKey.size() * (blockSize - 1)) + columnIndex >= ciphertext.size())
+      {
+        sortedStrings[columnIndex] = ciphertext.substr(positionInCipherText, blockSize-1);
+        positionInCipherText += blockSize-1;
+      }
+      else 
+      {
+        sortedStrings[columnIndex] = ciphertext.substr(positionInCipherText, blockSize);
+        positionInCipherText += blockSize;
+      }
+    }
+
+    std::string plaintext(ciphertext.size(), ' ');
+    for (int index = 0, colIndex = 0; index < plaintext.size(); ++colIndex)
+    {
+      for (int i = 0; i < sortedStrings.size() && index < plaintext.size(); ++i, ++index)
+      {
+        plaintext[index] = sortedStrings[i][colIndex];
+      }
+    }
+
+    return plaintext;
   }
 
   // Takes indices and gets letters
@@ -118,8 +142,10 @@ namespace codec
     // intermediateText = oneTimePadDecrypt(secondKey, cipherText)
     //
     // auto derivedKey = polySquare(firstKey);
-    // plaintext = columnarTranspositionDecrypt(intermediateText, derivedKey)
-    //
-    // return plaintext
+    auto intermediateText = "hlodlwleor";
+    auto derivedKey = "MOM";
+    auto plaintext = columnarTranspositionDecrypt(derivedKey, intermediateText);
+
+    return plaintext;
   }
 }

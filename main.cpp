@@ -32,5 +32,9 @@ int main(int argc, char *argv[])
 
   printf("ciphertext: %s\n", ciphertext.c_str());
 
+  auto decryptedPlaintext = codec::decrypt(ciphertext, firstKey, secondKey);
+
+  printf("plaintext: %s\n", decryptedPlaintext.c_str());
+
   return 0;
 }
