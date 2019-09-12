@@ -12,19 +12,19 @@
 
 #include "codec.hpp"
 
-namespace 
+namespace
 {
-	std::string checkLower(std::string value)
-	{
-		for (int i = 0; i < value.size(); ++i)
-		{
-			if (std::islower(value[i]))
-			{
-				value[i] = toupper(value[i]);
-			}
-		}	
-	  return value;
-	}
+  std::string checkLower(std::string value)
+  {
+    for (int i = 0; i < value.size(); ++i)
+    {
+      if (std::islower(value[i]))
+      {
+        value[i] = toupper(value[i]);
+      }
+    }
+    return value;
+  }
 }
 
 int main(int argc, char *argv[])

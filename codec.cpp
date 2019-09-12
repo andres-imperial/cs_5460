@@ -19,35 +19,32 @@ namespace codec
   std::string oneTimePadEncrypt(std::string key, std::string text)
   {
     std::string polyIndices = reversePolySquare(text);
-	
-	std::string encryptText;
-	
-	for (int i = 0; i < polyIndices.size(); i+=2)
-	{
-		std::string subStr = polyIndices.substr(i, 2);
-		int subInt = std::stoi(subStr);
-		std::bitset<6> xorBits = std::bitset<6>(subInt)^=std::bitset<6>(std::stoi(key));
-		encryptText = encryptText + binaryToDecimal(xorBits.to_string());
-	}
-	return encryptText;
+
+    for (int i = 0; i < polyIndices.size(); i += 2)
+    {
+      std::string subStr = polyIndices.substr(i, 2);
+      int subInt = std::stoi(subStr);
+      std::bitset<6> xorBits = std::bitset<6>(subInt) ^= std::bitset<6>(std::stoi(key));
+      encryptText = encryptText + binaryToDecimal(xorBits.to_string());
+    }
+    return encryptText;
   }
 
   std::string oneTimePadDecrypt(std::string key, std::string text)
   {
-	  std::string intermediateText;
-	  std::string polyIndices;
-	  
-	  for (int i = 0; i < text.size(); i+=2)
-	  {
-		std::string subStr = text.substr(i, 2);
-		int subInt = std::stoi(subStr);
-		std::bitset<6> xorBits = std::bitset<6>(subInt)^=std::bitset<6>(std::stoi(key));
-		polyIndices = polyIndices + binaryToDecimal(xorBits.to_string());
-	  }
-	  
-	  intermediateText = ploySquare(polyIndices);
-	  
-	return intermediateText;
+    std::string intermediateText;
+    std::string polyIndices;
+    
+    for (int i = 0; i < text.size(); i += 2)
+    {
+      std::string subStr = text.substr(i, 2);
+      int subInt = std::stoi(subStr);
+      std::bitset<6> xorBits = std::bitset<6>(subInt) ^= std::bitset<6>(std::stoi(key));
+      polyIndices = polyIndices + binaryToDecimal(xorBits.to_string());
+    }
+    intermediateText = ploySquare(polyIndices);
+
+    return intermediateText;
   }
 
   std::string columnarTranspositionEncrypt(std::string key,
