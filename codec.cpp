@@ -116,53 +116,51 @@ namespace codec
   
   std::string reversePolySquare(std::string text)
   {
-	  std::string polyText;
-	  
-	  for (int i = 0; i < text.size(); ++i)
-	  {
-		  char c = text[i];
-		  for (int i = 0; i < 6; i++)
-		  {
-			  for (int j = 0; j < 6; j++)
-			  {
-				  if (polybiusSquare[i][j] == c)
-				  {
-					  std::string indices = std::to_string(i) + std::to_string(j);
-					  polyText = polyText + indices;
-				  }
+    std::string polyText;
 
-			  }
-		  }
-	  }
-	
-	return polyText;
+    for (int i = 0; i < text.size(); ++i)
+    {
+      char c = text[i];
+      for (int j = 0; j < 6; ++j)
+      {
+        for (int k = 0; k < 6; ++k)
+        {
+          if (polybiusSquare[j][k] == c)
+          {
+            std::string indices = std::to_string(j) + std::to_string(k);
+            polyText = polyText + indices;
+          }
+        }
+      }
+    }
+    return polyText;
   }
   
   std::string binaryToDecimal(std::string bin)
   {
-	int binNum = std::stoi(bin);
-	int decvalue = 0; 
-	
-    int base = 1; 
-  
-    int temp = binNum; 
-    while (temp) { 
-        int lastDigit = temp % 10; 
-        temp = temp / 10; 
-  
-        decvalue += lastDigit * base; 
-  
-        base = base * 2; 
-    } 
+    int binNum = std::stoi(bin);
+    int decValue = 0;
+    int base = 1;
+    int temp = binNum;
 
-	if(decvalue < 10)
-	{
-		return "0" + std::to_string(decvalue);
-	}
-	else
-	{
-		return std::to_string(decvalue);
-	}
+    while (temp)
+    {
+      int lastDigit = temp % 10;
+      temp = temp / 10;
+
+      decValue += lastDigit * base;
+
+      base = base * 2;
+    }
+
+    if (decValue < 10)
+    {
+      return "0" + std::to_string(decValue);
+    }
+    else
+    {
+      return std::to_string(decValue);
+    }
   }
 
   std::string encrypt(std::string plaintext,
@@ -174,8 +172,8 @@ namespace codec
     printf("derivedKey: %s\n", derivedKey.c_str());
 
     auto ciphertext = columnarTranspositionEncrypt(derivedKey, plaintext);
-	
-	printf("intermediate text: %s\n", ciphertext.c_str());
+    
+    printf("intermediate text: %s\n", ciphertext.c_str());
 
     ciphertext = oneTimePadEncrypt(secondKey, ciphertext);
 
@@ -188,7 +186,7 @@ namespace codec
   {
     // DONE:
      std::string intermediateText = oneTimePadDecrypt(secondKey, ciphertext);
-	// TODO:
+     // TODO:
     //
     // auto derivedKey = polySquare(firstKey);
     // plaintext = columnarTranspositionDecrypt(intermediateText, derivedKey)
