@@ -10,10 +10,8 @@
 #include <vector>
 #include <map>
 #include <bitset>
-#include <iostream> 
 
 #include "codec.hpp"
-#include <iostream>
 
 namespace codec
 {
@@ -202,7 +200,7 @@ namespace codec
                       std::string secondKey)
   {
     std::string intermediateText = oneTimePadDecrypt(secondKey, ciphertext);
-    
+
     auto derivedKey = ploySquare(firstKey);
 
     auto plaintext = columnarTranspositionDecrypt(derivedKey, intermediateText);
