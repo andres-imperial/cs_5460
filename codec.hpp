@@ -11,6 +11,8 @@
 #define CODEC_HPP
 
 #include <string>
+#include <cmath>
+#include <algorithm>
 
 namespace codec
 {
