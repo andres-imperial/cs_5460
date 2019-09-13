@@ -87,7 +87,6 @@ namespace codec
     std::string sortedKey = derivedKey;
     std::sort(sortedKey.begin(), sortedKey.end());
 
-    std::map<char, std::string> orderedColumns;
     int positionInCipherText = 0;
     std::vector<std::string> sortedStrings(derivedKey.size());
     for (int index = 0; index < sortedKey.size(); ++index)
@@ -191,12 +190,8 @@ namespace codec
   {
     auto derivedKey = ploySquare(firstKey);
 
-    printf("derivedKey: %s\n", derivedKey.c_str());
-
     auto ciphertext = columnarTranspositionEncrypt(derivedKey, plaintext);
     
-    printf("intermediate text: %s\n", ciphertext.c_str());
-
     ciphertext = oneTimePadEncrypt(secondKey, ciphertext);
 
     return ciphertext;
@@ -207,9 +202,10 @@ namespace codec
                       std::string secondKey)
   {
     std::string intermediateText = oneTimePadDecrypt(secondKey, ciphertext);
+    
     auto derivedKey = ploySquare(firstKey);
 
-    auto plaintext = columnarTranspositionDecrypt(intermediateText, derivedKey);
+    auto plaintext = columnarTranspositionDecrypt(derivedKey, intermediateText);
 
     return plaintext;
   }
