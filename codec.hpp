@@ -24,6 +24,10 @@ namespace codec
                                      {'9', 'I', 'S', '5', 'T', 'L'}};
 
   std::string ploySquare(std::string key);
+  
+  std::string reversePolySquare(std::string text);
+  
+  std::string binaryToDecimal(std::string bin);
 
   std::string encrypt(std::string plaintext,
                       std::string firstKey,
