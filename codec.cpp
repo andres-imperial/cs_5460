@@ -24,7 +24,8 @@ namespace codec
     {
       std::string subStr = polyIndices.substr(i, 2);
       int subInt = std::stoi(subStr);
-      std::bitset<6> xorBits = std::bitset<6>(subInt) ^= std::bitset<6>(std::stoi(key));
+      std::bitset<6> xorBits = std::bitset<6>(subInt) ^=
+        std::bitset<6>(std::stoi(key));
       encryptText = encryptText + binaryToDecimal(xorBits.to_string());
     }
     return encryptText;
@@ -34,12 +35,13 @@ namespace codec
   {
     std::string intermediateText;
     std::string polyIndices;
-    
+
     for (int i = 0; i < text.size(); i += 2)
     {
       std::string subStr = text.substr(i, 2);
       int subInt = std::stoi(subStr);
-      std::bitset<6> xorBits = std::bitset<6>(subInt) ^= std::bitset<6>(std::stoi(key));
+      std::bitset<6> xorBits = std::bitset<6>(subInt) ^=
+        std::bitset<6>(std::stoi(key));
       polyIndices = polyIndices + binaryToDecimal(xorBits.to_string());
     }
     intermediateText = ploySquare(polyIndices);
@@ -53,12 +55,8 @@ namespace codec
     std::vector<std::string> columns(key.size());
     for (int i = 0; i < key.size(); ++i)
     {
-      for (int j = 0; j < key.size(); ++j)
+      for (int j = 0; j * key.size() + i < plaintext.size(); ++j)
       {
-        if (j * key.size() + i >= plaintext.size())
-        {
-          break;
-        }
         columns[i].push_back(plaintext[j * key.size() + i]);
       }
     }
@@ -81,7 +79,7 @@ namespace codec
   std::string columnarTranspositionDecrypt(std::string derivedKey,
                                            std::string ciphertext)
   {
-    int blockSize = std::ceil((double)ciphertext.size()/derivedKey.size());
+    int blockSize = std::ceil((double)ciphertext.size() / derivedKey.size());
     std::string sortedKey = derivedKey;
     std::sort(sortedKey.begin(), sortedKey.end());
 
@@ -92,14 +90,17 @@ namespace codec
       char currCharInSortedKey = sortedKey.at(index);
       auto columnIndex = derivedKey.find(currCharInSortedKey);
       derivedKey[columnIndex] = '+';
-      if ((sortedKey.size() * (blockSize - 1)) + columnIndex >= ciphertext.size())
+      if ((sortedKey.size() * (blockSize - 1)) + columnIndex >=
+          ciphertext.size())
       {
-        sortedStrings[columnIndex] = ciphertext.substr(positionInCipherText, blockSize-1);
-        positionInCipherText += blockSize-1;
+        sortedStrings[columnIndex] =
+          ciphertext.substr(positionInCipherText, blockSize - 1);
+        positionInCipherText += blockSize - 1;
       }
-      else 
+      else
       {
-        sortedStrings[columnIndex] = ciphertext.substr(positionInCipherText, blockSize);
+        sortedStrings[columnIndex] =
+          ciphertext.substr(positionInCipherText, blockSize);
         positionInCipherText += blockSize;
       }
     }
@@ -107,7 +108,8 @@ namespace codec
     std::string plaintext(ciphertext.size(), ' ');
     for (int index = 0, colIndex = 0; index < plaintext.size(); ++colIndex)
     {
-      for (int i = 0; i < sortedStrings.size() && index < plaintext.size(); ++i, ++index)
+      for (int i = 0; i < sortedStrings.size() && index < plaintext.size();
+           ++i, ++index)
       {
         plaintext[index] = sortedStrings[i][colIndex];
       }
@@ -132,7 +134,7 @@ namespace codec
 
     return result;
   }
-  
+
   std::string reversePolySquare(std::string text)
   {
     std::string polyText;
@@ -154,7 +156,7 @@ namespace codec
     }
     return polyText;
   }
-  
+
   std::string binaryToDecimal(std::string bin)
   {
     int binNum = std::stoi(bin);
@@ -189,7 +191,7 @@ namespace codec
     auto derivedKey = ploySquare(firstKey);
 
     auto ciphertext = columnarTranspositionEncrypt(derivedKey, plaintext);
-    
+
     ciphertext = oneTimePadEncrypt(secondKey, ciphertext);
 
     return ciphertext;
