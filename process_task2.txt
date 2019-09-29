@@ -1,0 +1,4 @@
+tool: https://www.devglan.com/online-tools/rsa-encryption-decryption
+key size: 2048 bit
+key type: private
+cipher type: RSA
