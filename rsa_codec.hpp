@@ -10,6 +10,7 @@
 namespace rsa
 {
   mp::mpz_int encryptOrDecrypt(mp::mpz_int value, Key key);
+  mp::mpz_int stringToMpz_int(std::string value);
 }
 
 #endif
