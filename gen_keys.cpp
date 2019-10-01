@@ -170,16 +170,26 @@ namespace rsa
       return true;
     }
 
-    unsigned int genPrimeNumber(void)
+    mp::mpz_int genPrimeNumber(void)
     {
-      auto randNum = std::rand() % std::numeric_limits<unsigned int>::max();
-
-      while (!isPrime(randNum, 25))
+      unsigned int randNum = 0;
+      while (randNum < 250)
       {
-        randNum = std::rand() % std::numeric_limits<unsigned int>::max();
+        randNum = std::rand() % 500;
       }
 
-      return randNum;
+      mpz_t n;
+      mpz_init(n);
+      mpz_ui_pow_ui(n, 10, randNum);
+      mpz_sub_ui(n, n, 1);
+      while (true) 
+      {
+        if (mpz_probab_prime_p(n, 100)) 
+        {
+          return n;
+        }
+        mpz_add_ui(n, n, 2);
+      }
     }
   }
 

@@ -16,14 +16,14 @@ int main(void)
          keys.second.exponent.convert_to<std::string>().c_str(),
          keys.second.mod.convert_to<std::string>().c_str());
 
-  mp::mpz_int message = 1234;
+  mp::mpz_int message = 1840155683;
   printf("plaintext message: %s\n", message.convert_to<std::string>().c_str());
 
-  auto encodedMessage = rsa::encryptOrDecrypt(message, keys.first);
+  mp::mpz_int encodedMessage = rsa::encryptOrDecrypt(message, keys.first);
   printf("encrypted message: %s\n",
          encodedMessage.convert_to<std::string>().c_str());
 
-  auto decodedMessage = rsa::encryptOrDecrypt(encodedMessage, keys.second);
+  mp::mpz_int decodedMessage = rsa::encryptOrDecrypt(encodedMessage, keys.second);
   printf("decrypted message: %s\n",
          decodedMessage.convert_to<std::string>().c_str());
 }
