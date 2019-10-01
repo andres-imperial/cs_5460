@@ -25,7 +25,7 @@ int main(void)
   printf("encrypted message: %s\n",
          encodedMessage.convert_to<std::string>().c_str());
 
-  auto decodedMessage = rsa::encryptOrDecrypt(encodedMessage, keys.second);
+  mp::mpz_int decodedMessage = rsa::encryptOrDecrypt(encodedMessage, keys.second);
   printf("decrypted message: %s\n",
          decodedMessage.convert_to<std::string>().c_str());
 
