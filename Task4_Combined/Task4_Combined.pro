@@ -26,12 +26,22 @@ CONFIG += c++11
 
 SOURCES += \
         main.cpp \
-        mainwindow.cpp
+        mainwindow.cpp \
+    gen_keys.cpp \
+    rsa_codec.cpp
 
 HEADERS += \
-        mainwindow.h
+        mainwindow.h \
+    gen_keys.hpp \
+    rsa_codec.hpp
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
+
+win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../../Downloads/gmp-dynamic-vc-4.1.2/gmp-dynamic/ -lgmp
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../Downloads/gmp-dynamic-vc-4.1.2/gmp-dynamic/ -lgmpd
+
+INCLUDEPATH += $$PWD/../../Downloads/gmp-dynamic-vc-4.1.2/gmp-dynamic
+DEPENDPATH += $$PWD/../../Downloads/gmp-dynamic-vc-4.1.2/gmp-dynamic
