@@ -3,7 +3,6 @@
 // ============================================================================
 
 #include "rsa_codec.hpp"
-// #include <iostream>
 
 namespace rsa
 {
@@ -15,11 +14,11 @@ namespace rsa
   mp::mpz_int stringToMpz_int(std::string value) 
   {
     std::string tempString = "";
+    transform(value.begin(), value.end(), value.begin(), ::toupper); 
 
     for (int i = 0; i < value.length(); i++)
     {
         char x = value.at(i);
-        // std::cout << "x: " << x << ", num: " << (int)x << std::endl;
         tempString += std::to_string((int)x);
     }
 
@@ -29,5 +28,18 @@ namespace rsa
     num = tempNum;
 
     return num;
+  }
+
+  std::string mpz_intToString(mp::mpz_int value) 
+  {
+    std::string tempString = value.convert_to<std::string>();
+    std::string finalString = "";
+
+    for (int i = 0; i < tempString.length(); i+= 2) 
+    {
+        finalString += (char)std::stoi(tempString.substr(i, 2));
+    }
+
+    return finalString;
   }
 }
