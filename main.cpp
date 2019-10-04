@@ -20,7 +20,7 @@ int main(void)
   It is also really long and has lot of awesome information in it. Hello World This is a really cool message. \
   It is also really long and has lot of awesome information in it. Hello World This is a really cool message. \
   It is also really long and has lot of awesome information in it. Hello World This is a really cool message. abcde";
-  
+
   printf("Original message: %s\n", message.c_str());
 
   int lengthOfMessage = message.length();

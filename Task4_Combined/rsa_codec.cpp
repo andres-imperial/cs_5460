@@ -30,6 +30,16 @@ namespace rsa
     return num;
   }
 
+  mp::mpz_int stringToMpz_int_2(std::string value)
+  {
+    mp::mpz_int num;
+    mpz_t tempNum;
+    mpz_init_set_str(tempNum, value.c_str(), 10);
+    num = tempNum;
+
+    return num;
+  }
+
   std::string mpz_intToString(mp::mpz_int value)
   {
     std::string tempString = value.convert_to<std::string>();

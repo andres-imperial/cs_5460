@@ -159,8 +159,10 @@ MainWindow::MainWindow(QWidget *parent)
     encryptBtn->setSizePolicy(spGrow);
     connect(encryptBtn, &QPushButton::clicked, [plaintextField, keyEdit, keyMod, ciphertextField] {
         mp::mpz_int numMessage = rsa::stringToMpz_int(plaintextField->toPlainText().toStdString());
-        rsa::Key tempKey{rsa::stringToMpz_int(keyEdit->toPlainText().toStdString()), rsa::stringToMpz_int(keyMod->toPlainText().toStdString())};
+        auto output = numMessage.convert_to<std::string>();
+        rsa::Key tempKey{rsa::stringToMpz_int_2(keyEdit->toPlainText().toStdString()), rsa::stringToMpz_int_2(keyMod->toPlainText().toStdString())};
         auto decodedNumMessage = rsa::encryptOrDecrypt(numMessage, tempKey);
+        printf("decodedNumMessage: %s\n", decodedNumMessage.convert_to<std::string>().c_str());
         ciphertextField->setText(QString::fromStdString(decodedNumMessage.convert_to<std::string>()));
     });
 
@@ -211,8 +213,8 @@ MainWindow::MainWindow(QWidget *parent)
     QPushButton *decryptBtn = new QPushButton("Decrypt", decryptPage);     // button to decrypt ciphertext
     decryptBtn->setSizePolicy(spGrow);
     connect(decryptBtn, &QPushButton::clicked, [ciphertextField2, keyEdit2, keyMod2, plaintextField2] {
-        mp::mpz_int numMessage = rsa::stringToMpz_int(ciphertextField2->toPlainText().toStdString());
-        rsa::Key tempKey{rsa::stringToMpz_int(keyEdit2->toPlainText().toStdString()), rsa::stringToMpz_int(keyMod2->toPlainText().toStdString())};
+        mp::mpz_int numMessage = rsa::stringToMpz_int_2(ciphertextField2->toPlainText().toStdString());
+        rsa::Key tempKey{rsa::stringToMpz_int_2(keyEdit2->toPlainText().toStdString()), rsa::stringToMpz_int_2(keyMod2->toPlainText().toStdString())};
         auto encodedNumMessage = rsa::encryptOrDecrypt(numMessage, tempKey);
         plaintextField2->setText(QString::fromStdString(rsa::mpz_intToString(encodedNumMessage)));
     });
