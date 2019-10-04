@@ -3,17 +3,59 @@
 // ============================================================================
 
 #include "gen_keys.hpp"
+#include "boost/filesystem.hpp"
 
 #include <cstdlib>
 #include <cstdio>
 #include <limits>
 #include <ctime>
 #include <cmath>
+#include <fstream>
 
 namespace rsa
 {
   namespace detail
   {
+    void writePublicKey(rsa::Key key, boost::filesystem::path directory)
+    {
+      auto fileName = (directory / "public_key.txt").string();
+
+      std::ofstream outFile(fileName);
+      if (outFile.good())
+      {
+        outFile << key.exponent.convert_to<std::string>();
+        outFile << std::endl;
+        outFile << key.mod.convert_to<std::string>();
+      }
+      outFile.close();
+    }
+
+    void writePrivateKey(rsa::Key key, boost::filesystem::path directory)
+    {
+      auto fileName = (directory / "private_key.txt").string();
+
+      std::ofstream outFile(fileName);
+      if (outFile.good())
+      {
+        outFile << key.exponent.convert_to<std::string>();
+        outFile << std::endl;
+        outFile << key.mod.convert_to<std::string>();
+      }
+      outFile.close();
+    }
+
+    void writeKeysToDisk(std::pair<rsa::Key, 
+                         rsa::Key> keys, 
+                         boost::filesystem::path directory = "")
+    {
+      if (directory.empty())
+      {
+        directory = boost::filesystem::current_path();
+      }
+      writePublicKey(keys.first, directory);
+      writePrivateKey(keys.second, directory);
+    }
+
     void ext_euclidean(mp::mpz_int a,
                        mp::mpz_int b,
                        mp::mpz_int& x,
@@ -77,9 +119,9 @@ namespace rsa
     // Test procedure is based on Miller-Rabin test
     bool millerRabinTest(unsigned int d, unsigned int input)
     {
-      int a = 2 + (rand() % (input - 4));
+      unsigned int a = 2 + (rand() % (input - 4));
 
-      int x = power(a, d, input);
+      unsigned int x = power(a, d, input);
 
       if (x == 1 || x == input - 1)
       {
@@ -117,7 +159,7 @@ namespace rsa
         d /= 2;
       }
 
-      for (int i = 0; i < numOfRounds; ++i)
+      for (unsigned int i = 0; i < numOfRounds; ++i)
       {
         if (!millerRabinTest(d, input))
         {
@@ -128,16 +170,26 @@ namespace rsa
       return true;
     }
 
-    unsigned int genPrimeNumber(void)
+    mp::mpz_int genPrimeNumber(void)
     {
-      auto randNum = std::rand() % std::numeric_limits<unsigned int>::max();
-
-      while (!isPrime(randNum, 25))
+      unsigned int randNum = 0;
+      while (randNum < 250)
       {
-        randNum = std::rand() % std::numeric_limits<unsigned int>::max();
+        randNum = std::rand() % 500;
       }
 
-      return randNum;
+      mpz_t n;
+      mpz_init(n);
+      mpz_ui_pow_ui(n, 10, randNum);
+      mpz_sub_ui(n, n, 1);
+      while (true) 
+      {
+        if (mpz_probab_prime_p(n, 100)) 
+        {
+          return n;
+        }
+        mpz_add_ui(n, n, 2);
+      }
     }
   }
 
@@ -169,6 +221,9 @@ namespace rsa
            e.convert_to<std::string>().c_str(),
            d.convert_to<std::string>().c_str());
 
-    return std::make_pair(Key{e, n}, Key{d, n});
+    auto resultKeys = std::make_pair(Key{e, n}, Key{d, n});
+    detail::writeKeysToDisk(resultKeys);
+
+    return resultKeys;
   }
 }

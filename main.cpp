@@ -16,14 +16,28 @@ int main(void)
          keys.second.exponent.convert_to<std::string>().c_str(),
          keys.second.mod.convert_to<std::string>().c_str());
 
-  mp::mpz_int message = 1234;
-  printf("plaintext message: %s\n", message.convert_to<std::string>().c_str());
+  std::string message = "Hello World This is a really cool message. \
+  It is also really long and has lot of awesome information in it. Hello World This is a really cool message. \
+  It is also really long and has lot of awesome information in it. Hello World This is a really cool message. \
+  It is also really long and has lot of awesome information in it. Hello World This is a really cool message. abcde";
 
-  auto encodedMessage = rsa::encryptOrDecrypt(message, keys.first);
+  printf("Original message: %s\n", message.c_str());
+
+  int lengthOfMessage = message.length();
+  printf("Length of Message: %i\n", lengthOfMessage);
+
+  mp::mpz_int numMessage = rsa::stringToMpz_int(message);
+  printf("plaintext message: %s\n", numMessage.convert_to<std::string>().c_str());
+
+  auto encodedNumMessage = rsa::encryptOrDecrypt(numMessage, keys.first);
   printf("encrypted message: %s\n",
-         encodedMessage.convert_to<std::string>().c_str());
+         encodedNumMessage.convert_to<std::string>().c_str());
 
-  auto decodedMessage = rsa::encryptOrDecrypt(encodedMessage, keys.second);
+  mp::mpz_int decodedNumMessage = rsa::encryptOrDecrypt(encodedNumMessage, keys.second);
   printf("decrypted message: %s\n",
-         decodedMessage.convert_to<std::string>().c_str());
+         decodedNumMessage.convert_to<std::string>().c_str());
+
+  std::string decodedMessage = rsa::mpz_intToString(decodedNumMessage);
+  printf("original message: %s\n", decodedMessage.c_str());
+
 }
