@@ -139,12 +139,13 @@ MainWindow::MainWindow(QWidget *parent)
         if (keyFile.open(QIODevice::ReadOnly | QIODevice::Text))
         {
             QTextStream qts(&keyFile);
-            QString temp;
+            QString temp, temp2;
             qts >> temp;
             keyEdit->setText(temp);
-            qts >> temp;
-            keyMod->setText(temp);
+            qts >> temp2;
+            keyMod->setText(temp2);
             keyBtn->setText("Key Opened");
+            keyBtn->setToolTip("Exponent: " + temp + "\nModulus: " + temp2);
         }
     });
 
@@ -190,13 +191,14 @@ MainWindow::MainWindow(QWidget *parent)
         QFile keyFile(filename);
         if (keyFile.open(QIODevice::ReadOnly | QIODevice::Text))
         {
-            QString temp;
+            QString temp, temp2;
             QTextStream qts(&keyFile);
             qts >> temp;
             keyEdit2->setText(temp);
-            qts >> temp;
-            keyMod2->setText(temp);
+            qts >> temp2;
+            keyMod2->setText(temp2);
             keyBtn2->setText("Key Opened");
+            keyBtn2->setToolTip("Exponent: " + temp + "\nModulus: " + temp2);
         }
     });
 
