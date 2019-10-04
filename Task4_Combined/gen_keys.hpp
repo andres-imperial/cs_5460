@@ -20,6 +20,6 @@ namespace rsa
   // Generates public and private keys.
   // @returns a pair of Key structs with the 'first' being the public key
   // and the 'second' being the private key
-  std::pair<Key, Key> genKeys(void);
+  std::pair<Key, Key> genKeys(std::string directory);
 }
 #endif
