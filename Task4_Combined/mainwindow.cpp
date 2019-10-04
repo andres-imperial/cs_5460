@@ -90,7 +90,7 @@ MainWindow::MainWindow(QWidget *parent)
         }
 
         QString directory = QDir::currentPath();
-        auto keys = rsa::genKeys("helloworld");                                     // generate keys
+        auto keys = rsa::genKeys(directory.toStdString());                                     // generate keys
         /*
         QFile privateFile("private.key");                               // file for private key
         privateFile.open(QIODevice::WriteOnly | QIODevice::Text);
