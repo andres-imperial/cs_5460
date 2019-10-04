@@ -40,8 +40,9 @@ qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
-win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../../Downloads/gmp-dynamic-vc-4.1.2/gmp-dynamic/ -lgmp
-else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../Downloads/gmp-dynamic-vc-4.1.2/gmp-dynamic/ -lgmpd
+win32 {
+    INCLUDEPATH += C:/MinGW/include/boost/
+    LIBS += "-LC:/MinGW/lib/" -lgmp -lboost_system -lboost_filesystem
+}
 
-INCLUDEPATH += $$PWD/../../Downloads/gmp-dynamic-vc-4.1.2/gmp-dynamic
-DEPENDPATH += $$PWD/../../Downloads/gmp-dynamic-vc-4.1.2/gmp-dynamic
+QMAKE_CXXFLAGS += -lgmp -lboost_system -lboost_filesystem

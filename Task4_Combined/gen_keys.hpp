@@ -5,7 +5,7 @@
 #ifndef GEN_KEYS_HPP
 #define GEN_KEYS_HPP
 
-#include <gmp.h>
+#include <boost/multiprecision/gmp.hpp>
 
 namespace mp = boost::multiprecision;
 
