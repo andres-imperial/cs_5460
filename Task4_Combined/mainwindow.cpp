@@ -1,16 +1,19 @@
 #include "mainwindow.h"
 
-#include <QtWidgets/QStackedWidget>
-#include <QtWidgets/QGridLayout>
 #include <QtWidgets/QCheckBox>
+#include <QtWidgets/QGridLayout>
 #include <QtWidgets/QLabel>
 #include <QtWidgets/QPushButton>
 #include <QtWidgets/QStackedWidget>
 #include <QtWidgets/QTextEdit>
 #include <QtWidgets/QVBoxLayout>
+#include <QString>
 #include <QDir>
 #include <QFileDialog>
 #include <QTextStream>
+
+#include "rsa_codec.hpp"
+#include "gen_keys.hpp"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -62,23 +65,23 @@ MainWindow::MainWindow(QWidget *parent)
     keyLayout->setSpacing(10);
 
     // widgets
-    QLabel *privateLabel = new QLabel("Private Key: ", keyPage);   // key labels
+    QLabel *privateLabel = new QLabel("Private Key: ", keyPage);    // key labels
     QLabel *publicLabel = new QLabel("Public Key: ", keyPage);
     publicLabel->setAlignment(Qt::AlignTop);
     publicLabel->setMargin(5);
     privateLabel->setAlignment(Qt::AlignTop);
     privateLabel->setMargin(5);
 
-    QTextEdit *privateField = new QTextEdit(keyPage);              // key fields
+    QTextEdit *privateField = new QTextEdit(keyPage);               // key fields
     QTextEdit *publicField = new QTextEdit(keyPage);
     privateField->setReadOnly(true);
     publicField->setReadOnly(true);
 
-    QCheckBox *chooseDir = new QCheckBox("Choose Directory", keyPage);     // checkbox for manual directory
+    QCheckBox *chooseDir = new QCheckBox("Choose Directory", keyPage);      // checkbox for manual directory
     chooseDir->setStyleSheet("margin-left:10%");
-    QPushButton *generateBtn = new QPushButton("Generate Keys", keyPage);  // button for key generation
-    connect(generateBtn, &QPushButton::clicked, [keyPage, chooseDir] {
-        if (chooseDir->checkState())                                    // if checkbox checked, open dialog to select path
+    QPushButton *generateBtn = new QPushButton("Generate Keys", keyPage);   // button for key generation
+    connect(generateBtn, &QPushButton::clicked, [keyPage, chooseDir, publicField, privateField] {
+        if (chooseDir->checkState())                                        // if checkbox checked, open dialog to select path
         {
             QFileDialog dialog(keyPage);
             dialog.setFileMode(QFileDialog::Directory);
@@ -86,19 +89,24 @@ MainWindow::MainWindow(QWidget *parent)
             dialog.exec();
         }
 
-        QFile privateFile("private.key");                               // files for keys
+        QString directory = QDir::currentPath();
+        auto keys = rsa::genKeys(directory.toStdString());                                     // generate keys
+
+        publicField->setText("Exponent: " + QString::fromStdString(keys.first.exponent.convert_to<std::string>()) +
+                             "\nModulus: " + QString::fromStdString(keys.first.mod.convert_to<std::string>()));
+        privateField->setText("Exponent: " + QString::fromStdString(keys.second.exponent.convert_to<std::string>()) +
+                             "\nModulus: " + QString::fromStdString(keys.second.mod.convert_to<std::string>()));
+
+        /*
+        QFile privateFile("private.key");                               // file for private key
         privateFile.open(QIODevice::WriteOnly | QIODevice::Text);
-        QFile publicFile("public.key");
+        QTextStream privateStream(&privateFile);                        // output key to file
+        privateStream << keys.first.exponent;
+        QFile publicFile("public.key");                                 // repeat for public key
         publicFile.open(QIODevice::WriteOnly | QIODevice::Text);
-
-        QString privateKey, publicKey;
-
-        // create keys here
-
-        QTextStream privateStream(&privateFile);                        // output keys to files
-        privateStream << privateKey;
         QTextStream publicStream(&publicFile);
-        privateStream << publicKey;
+        privateStream << keys.second.exponent;
+        */
     });
 
     QPushButton *back1 = new QPushButton("Back", keyPage);
@@ -122,24 +130,40 @@ MainWindow::MainWindow(QWidget *parent)
 
     // widgets
     QTextEdit *plaintextField = new QTextEdit(encryptPage);    // field for plaintext input
+    plaintextField->setPlaceholderText("Plaintext Here");
     QTextEdit *ciphertextField = new QTextEdit(encryptPage);   // field for ciphertext output
+    ciphertextField->setPlaceholderText("Ciphertext Output");
     ciphertextField->setReadOnly(true);
 
-    QString *key;
-    QPushButton *keyBtn = new QPushButton("Open Key", encryptPage);        // button for getting key
-    connect(keyBtn, &QPushButton::clicked, [encryptPage, keyBtn, &key] {
-        QString filename = QFileDialog::getOpenFileName(encryptPage);      // dialog for key file
+    QTextEdit *keyEdit = new QTextEdit(encryptPage);
+    QTextEdit *keyMod = new QTextEdit(encryptPage);
+    QPushButton *keyBtn = new QPushButton("Open Key", encryptPage);         // button for getting key
+    keyBtn->setSizePolicy(spGrow);
+    connect(keyBtn, &QPushButton::clicked, [encryptPage, keyBtn, keyEdit, keyMod] {
+        QString filename = QFileDialog::getOpenFileName(encryptPage);       // dialog for key file
         QFile keyFile(filename);
         if (keyFile.open(QIODevice::ReadOnly | QIODevice::Text))
         {
             QTextStream qts(&keyFile);
-            //qts >> *key;                                          // this breaks everything lol
+            QString temp, temp2;
+            qts >> temp;
+            keyEdit->setText(temp);
+            qts >> temp2;
+            keyMod->setText(temp2);
             keyBtn->setText("Key Opened");
+            keyBtn->setToolTip("Exponent: " + temp + "\nModulus: " + temp2);
         }
     });
-    QPushButton *encryptBtn = new QPushButton("Encrypt", encryptPage);     // button to encrypt plaintext
-    connect(encryptBtn, &QPushButton::clicked, [] {
-        // encryption algorithm
+
+    QPushButton *encryptBtn = new QPushButton("Encrypt", encryptPage);      // button to encrypt plaintext
+    encryptBtn->setSizePolicy(spGrow);
+    connect(encryptBtn, &QPushButton::clicked, [plaintextField, keyEdit, keyMod, ciphertextField] {
+        mp::mpz_int numMessage = rsa::stringToMpz_int(plaintextField->toPlainText().toStdString());
+        auto output = numMessage.convert_to<std::string>();
+        rsa::Key tempKey{rsa::stringToMpz_int_2(keyEdit->toPlainText().toStdString()), rsa::stringToMpz_int_2(keyMod->toPlainText().toStdString())};
+        auto decodedNumMessage = rsa::encryptOrDecrypt(numMessage, tempKey);
+        printf("decodedNumMessage: %s\n", decodedNumMessage.convert_to<std::string>().c_str());
+        ciphertextField->setText(QString::fromStdString(decodedNumMessage.convert_to<std::string>()));
     });
 
     QPushButton *back2 = new QPushButton("Back", keyPage);
@@ -161,24 +185,38 @@ MainWindow::MainWindow(QWidget *parent)
 
     // widgets
     QTextEdit *ciphertextField2 = new QTextEdit(decryptPage);   // field for ciphertext input
+    ciphertextField2->setPlaceholderText("Cipher Text Here");
     QTextEdit *plaintextField2 = new QTextEdit(decryptPage);    // field for plaintext output
+    plaintextField2->setPlaceholderText("Plaintext Output");
     plaintextField2->setReadOnly(true);
 
-    QString *key2;
+    QTextEdit *keyEdit2 = new QTextEdit(decryptPage);
+    QTextEdit *keyMod2 = new QTextEdit(decryptPage);
     QPushButton *keyBtn2 = new QPushButton("Open Key", decryptPage);        // button for getting key
-    connect(keyBtn2, &QPushButton::clicked, [decryptPage, keyBtn2, &key2] {
-        QString filename = QFileDialog::getOpenFileName(decryptPage);      // dialog for key file
+    keyBtn2->setSizePolicy(spGrow);
+    connect(keyBtn2, &QPushButton::clicked, [decryptPage, keyBtn2, keyEdit2, keyMod2] {
+        QString filename = QFileDialog::getOpenFileName(decryptPage);       // dialog for key file
         QFile keyFile(filename);
         if (keyFile.open(QIODevice::ReadOnly | QIODevice::Text))
         {
+            QString temp, temp2;
             QTextStream qts(&keyFile);
-            //qts >> *key2;                                          // this breaks everything lol
+            qts >> temp;
+            keyEdit2->setText(temp);
+            qts >> temp2;
+            keyMod2->setText(temp2);
             keyBtn2->setText("Key Opened");
+            keyBtn2->setToolTip("Exponent: " + temp + "\nModulus: " + temp2);
         }
     });
+
     QPushButton *decryptBtn = new QPushButton("Decrypt", decryptPage);     // button to decrypt ciphertext
-    connect(decryptBtn, &QPushButton::clicked, [] {
-        // decryption algorithm
+    decryptBtn->setSizePolicy(spGrow);
+    connect(decryptBtn, &QPushButton::clicked, [ciphertextField2, keyEdit2, keyMod2, plaintextField2] {
+        mp::mpz_int numMessage = rsa::stringToMpz_int_2(ciphertextField2->toPlainText().toStdString());
+        rsa::Key tempKey{rsa::stringToMpz_int_2(keyEdit2->toPlainText().toStdString()), rsa::stringToMpz_int_2(keyMod2->toPlainText().toStdString())};
+        auto encodedNumMessage = rsa::encryptOrDecrypt(numMessage, tempKey);
+        plaintextField2->setText(QString::fromStdString(rsa::mpz_intToString(encodedNumMessage)));
     });
 
     QPushButton *back3 = new QPushButton("Back", keyPage);
@@ -186,9 +224,9 @@ MainWindow::MainWindow(QWidget *parent)
 
     // layout
     decryptLayout->addWidget(keyBtn2, 0, 0);
-    decryptLayout->addWidget(plaintextField2, 0, 1);
+    decryptLayout->addWidget(ciphertextField2, 0, 1);
     decryptLayout->addWidget(decryptBtn, 1, 0);
-    decryptLayout->addWidget(ciphertextField2, 1, 1);
+    decryptLayout->addWidget(plaintextField2, 1, 1);
     decryptLayout->addWidget(back3, 2, 0, 1, 2);
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////// credits
