@@ -193,7 +193,7 @@ namespace rsa
     }
   }
 
-  std::pair<Key, Key> genKeys(std::string directory)
+  std::pair<Key, Key> genKeys(std::string directory = "")
   {
     std::srand(std::time(NULL));
     mp::mpz_int p = detail::genPrimeNumber();

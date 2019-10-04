@@ -26,6 +26,8 @@ HEADERS += \
     mainwindow.h \
     rsa_codec.hpp
 
+unix:LIBS+= -L/usr/lib -lgmp -lboost_system -lboost_filesystem
+
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin

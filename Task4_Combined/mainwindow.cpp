@@ -13,6 +13,7 @@
 #include <QTextStream>
 
 #include "rsa_codec.hpp"
+#include "gen_keys.hpp"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -208,7 +209,7 @@ MainWindow::MainWindow(QWidget *parent)
         mp::mpz_int numMessage = rsa::stringToMpz_int(ciphertextField2->toPlainText().toStdString());
         rsa::Key tempKey{rsa::stringToMpz_int(keyEdit2->toPlainText().toStdString()), rsa::stringToMpz_int(keyMod2->toPlainText().toStdString())};
         auto encodedNumMessage = rsa::encryptOrDecrypt(numMessage, tempKey);
-        plaintextField2->setText(QString::fromStdString(mpz_intToString(encodedNumMessage)));
+        plaintextField2->setText(QString::fromStdString(rsa::mpz_intToString(encodedNumMessage)));
     });
 
     QPushButton *back3 = new QPushButton("Back", keyPage);
