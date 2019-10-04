@@ -151,7 +151,7 @@ MainWindow::MainWindow(QWidget *parent)
         mp::mpz_int numMessage = rsa::stringToMpz_int(plaintextField->toPlainText().toStdString());
         rsa::Key tempKey{rsa::stringToMpz_int(keyEdit->toPlainText().toStdString()), rsa::stringToMpz_int(keyMod->toPlainText().toStdString())};
         auto decodedNumMessage = rsa::encryptOrDecrypt(numMessage, tempKey);
-        ciphertextField->setText(decodedNumMessage);
+        ciphertextField->setText(QString::fromStdString(decodedNumMessage.convert_to<std::string>()));
     });
 
     QPushButton *back2 = new QPushButton("Back", keyPage);
@@ -201,7 +201,7 @@ MainWindow::MainWindow(QWidget *parent)
         mp::mpz_int numMessage = rsa::stringToMpz_int(ciphertextField2->toPlainText().toStdString());
         rsa::Key tempKey{rsa::stringToMpz_int(keyEdit2->toPlainText().toStdString()), rsa::stringToMpz_int(keyMod2->toPlainText().toStdString())};
         auto encodedNumMessage = rsa::encryptOrDecrypt(numMessage, tempKey);
-        plaintextField2->setText(encodedNumMessage);
+        plaintextField2->setText(QString::fromStdString(encodedNumMessage.convert_to<std::string>()));
     });
 
     QPushButton *back3 = new QPushButton("Back", keyPage);
