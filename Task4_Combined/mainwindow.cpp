@@ -97,7 +97,7 @@ MainWindow::MainWindow(QWidget *parent)
         privateField->setText("Exponent: " + QString::fromStdString(keys.second.exponent.convert_to<std::string>()) +
                              "\nModulus: " + QString::fromStdString(keys.second.mod.convert_to<std::string>()));
 
-        /*
+        /* Writing to files: (done in key_gen.hpp now)
         QFile privateFile("private.key");                               // file for private key
         privateFile.open(QIODevice::WriteOnly | QIODevice::Text);
         QTextStream privateStream(&privateFile);                        // output key to file
@@ -136,7 +136,9 @@ MainWindow::MainWindow(QWidget *parent)
     ciphertextField->setReadOnly(true);
 
     QTextEdit *keyEdit = new QTextEdit(encryptPage);
+	keyEdit->hide();
     QTextEdit *keyMod = new QTextEdit(encryptPage);
+	keyMod->hide();
     QPushButton *keyBtn = new QPushButton("Open Key", encryptPage);         // button for getting key
     keyBtn->setSizePolicy(spGrow);
     connect(keyBtn, &QPushButton::clicked, [encryptPage, keyBtn, keyEdit, keyMod] {
@@ -191,7 +193,9 @@ MainWindow::MainWindow(QWidget *parent)
     plaintextField2->setReadOnly(true);
 
     QTextEdit *keyEdit2 = new QTextEdit(decryptPage);
+	keyEdit2->hide();
     QTextEdit *keyMod2 = new QTextEdit(decryptPage);
+	keyMod2->hide();
     QPushButton *keyBtn2 = new QPushButton("Open Key", decryptPage);        // button for getting key
     keyBtn2->setSizePolicy(spGrow);
     connect(keyBtn2, &QPushButton::clicked, [decryptPage, keyBtn2, keyEdit2, keyMod2] {
