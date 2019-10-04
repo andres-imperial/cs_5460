@@ -193,7 +193,7 @@ namespace rsa
     }
   }
 
-  std::pair<Key, Key> genKeys(void)
+  std::pair<Key, Key> genKeys(std::string directory)
   {
     std::srand(std::time(NULL));
     mp::mpz_int p = detail::genPrimeNumber();
@@ -222,7 +222,7 @@ namespace rsa
            d.convert_to<std::string>().c_str());
 
     auto resultKeys = std::make_pair(Key{e, n}, Key{d, n});
-    detail::writeKeysToDisk(resultKeys);
+    detail::writeKeysToDisk(resultKeys, directory);
 
     return resultKeys;
   }
