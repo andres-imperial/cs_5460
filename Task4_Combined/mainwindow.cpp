@@ -7,6 +7,7 @@
 #include <QtWidgets/QStackedWidget>
 #include <QtWidgets/QTextEdit>
 #include <QtWidgets/QVBoxLayout>
+#include <QString>
 #include <QDir>
 #include <QFileDialog>
 #include <QTextStream>
@@ -123,7 +124,9 @@ MainWindow::MainWindow(QWidget *parent)
 
     // widgets
     QTextEdit *plaintextField = new QTextEdit(encryptPage);    // field for plaintext input
+    plaintextField->setPlaceholderText("Plaintext Here");
     QTextEdit *ciphertextField = new QTextEdit(encryptPage);   // field for ciphertext output
+    ciphertextField->setPlaceholderText("Ciphertext Output");
     ciphertextField->setReadOnly(true);
 
     QTextEdit *keyEdit = new QTextEdit(encryptPage);
@@ -173,7 +176,9 @@ MainWindow::MainWindow(QWidget *parent)
 
     // widgets
     QTextEdit *ciphertextField2 = new QTextEdit(decryptPage);   // field for ciphertext input
+    ciphertextField2->setPlaceholderText("Cipher Text Here");
     QTextEdit *plaintextField2 = new QTextEdit(decryptPage);    // field for plaintext output
+    plaintextField2->setPlaceholderText("Plaintext Output");
     plaintextField2->setReadOnly(true);
 
     QTextEdit *keyEdit2 = new QTextEdit(decryptPage);
@@ -209,9 +214,9 @@ MainWindow::MainWindow(QWidget *parent)
 
     // layout
     decryptLayout->addWidget(keyBtn2, 0, 0);
-    decryptLayout->addWidget(plaintextField2, 0, 1);
+    decryptLayout->addWidget(ciphertextField2, 0, 1);
     decryptLayout->addWidget(decryptBtn, 1, 0);
-    decryptLayout->addWidget(ciphertextField2, 1, 1);
+    decryptLayout->addWidget(plaintextField2, 1, 1);
     decryptLayout->addWidget(back3, 2, 0, 1, 2);
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////// credits
