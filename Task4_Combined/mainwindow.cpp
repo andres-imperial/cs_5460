@@ -80,7 +80,7 @@ MainWindow::MainWindow(QWidget *parent)
     QCheckBox *chooseDir = new QCheckBox("Choose Directory", keyPage);      // checkbox for manual directory
     chooseDir->setStyleSheet("margin-left:10%");
     QPushButton *generateBtn = new QPushButton("Generate Keys", keyPage);   // button for key generation
-    connect(generateBtn, &QPushButton::clicked, [keyPage, chooseDir] {
+    connect(generateBtn, &QPushButton::clicked, [keyPage, chooseDir, publicField, privateField] {
         if (chooseDir->checkState())                                        // if checkbox checked, open dialog to select path
         {
             QFileDialog dialog(keyPage);
@@ -91,12 +91,17 @@ MainWindow::MainWindow(QWidget *parent)
 
         QString directory = QDir::currentPath();
         auto keys = rsa::genKeys(directory.toStdString());                                     // generate keys
+
+        publicField->setText("Exponent: " + QString::fromStdString(keys.first.exponent.convert_to<std::string>()) +
+                             "\nModulus: " + QString::fromStdString(keys.first.mod.convert_to<std::string>()));
+        privateField->setText("Exponent: " + QString::fromStdString(keys.second.exponent.convert_to<std::string>()) +
+                             "\nModulus: " + QString::fromStdString(keys.second.mod.convert_to<std::string>()));
+
         /*
         QFile privateFile("private.key");                               // file for private key
         privateFile.open(QIODevice::WriteOnly | QIODevice::Text);
         QTextStream privateStream(&privateFile);                        // output key to file
         privateStream << keys.first.exponent;
-
         QFile publicFile("public.key");                                 // repeat for public key
         publicFile.open(QIODevice::WriteOnly | QIODevice::Text);
         QTextStream publicStream(&publicFile);
