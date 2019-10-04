@@ -1,8 +1,7 @@
 #include "mainwindow.h"
 
-#include <QtWidgets/QStackedWidget>
-#include <QtWidgets/QGridLayout>
 #include <QtWidgets/QCheckBox>
+#include <QtWidgets/QGridLayout>
 #include <QtWidgets/QLabel>
 #include <QtWidgets/QPushButton>
 #include <QtWidgets/QStackedWidget>
@@ -88,8 +87,9 @@ MainWindow::MainWindow(QWidget *parent)
             dialog.exec();
         }
 
-        auto keys = rsa::genKeys();                                     // generate keys
-
+        QString directory = QDir::currentPath();
+        auto keys = rsa::genKeys(directory.toStdString());                                     // generate keys
+        /*
         QFile privateFile("private.key");                               // file for private key
         privateFile.open(QIODevice::WriteOnly | QIODevice::Text);
         QTextStream privateStream(&privateFile);                        // output key to file
@@ -99,6 +99,7 @@ MainWindow::MainWindow(QWidget *parent)
         publicFile.open(QIODevice::WriteOnly | QIODevice::Text);
         QTextStream publicStream(&publicFile);
         privateStream << keys.second.exponent;
+        */
     });
 
     QPushButton *back1 = new QPushButton("Back", keyPage);
@@ -126,9 +127,10 @@ MainWindow::MainWindow(QWidget *parent)
     ciphertextField->setReadOnly(true);
 
     QTextEdit *keyEdit = new QTextEdit(encryptPage);
+    QTextEdit *keyMod = new QTextEdit(encryptPage);
     QPushButton *keyBtn = new QPushButton("Open Key", encryptPage);         // button for getting key
     keyBtn->setSizePolicy(spGrow);
-    connect(keyBtn, &QPushButton::clicked, [encryptPage, keyBtn, keyEdit] {
+    connect(keyBtn, &QPushButton::clicked, [encryptPage, keyBtn, keyEdit, keyMod] {
         QString filename = QFileDialog::getOpenFileName(encryptPage);       // dialog for key file
         QFile keyFile(filename);
         if (keyFile.open(QIODevice::ReadOnly | QIODevice::Text))
@@ -137,15 +139,18 @@ MainWindow::MainWindow(QWidget *parent)
             QString temp;
             qts >> temp;
             keyEdit->setText(temp);
+            qts >> temp;
+            keyMod->setText(temp);
             keyBtn->setText("Key Opened");
         }
     });
 
     QPushButton *encryptBtn = new QPushButton("Encrypt", encryptPage);      // button to encrypt plaintext
     encryptBtn->setSizePolicy(spGrow);
-    connect(encryptBtn, &QPushButton::clicked, [plaintextField, keyEdit, ciphertextField] {
-        mp::mpz_int numMessage = rsa::stringToMpz_int(plaintextField->toPlainText());
-        auto decodedNumMessage = rsa::encryptOrDecrypt(numMessage, keyEdit->toPlainText());
+    connect(encryptBtn, &QPushButton::clicked, [plaintextField, keyEdit, keyMod, ciphertextField] {
+        mp::mpz_int numMessage = rsa::stringToMpz_int(plaintextField->toPlainText().toStdString());
+        rsa::Key tempKey{rsa::stringToMpz_int(keyEdit->toPlainText().toStdString()), rsa::stringToMpz_int(keyMod->toPlainText().toStdString())};
+        auto decodedNumMessage = rsa::encryptOrDecrypt(numMessage, tempKey);
         ciphertextField->setText(decodedNumMessage);
     });
 
@@ -172,9 +177,10 @@ MainWindow::MainWindow(QWidget *parent)
     plaintextField2->setReadOnly(true);
 
     QTextEdit *keyEdit2 = new QTextEdit(decryptPage);
+    QTextEdit *keyMod2 = new QTextEdit(decryptPage);
     QPushButton *keyBtn2 = new QPushButton("Open Key", decryptPage);        // button for getting key
     keyBtn2->setSizePolicy(spGrow);
-    connect(keyBtn2, &QPushButton::clicked, [decryptPage, keyBtn2, keyEdit2] {
+    connect(keyBtn2, &QPushButton::clicked, [decryptPage, keyBtn2, keyEdit2, keyMod2] {
         QString filename = QFileDialog::getOpenFileName(decryptPage);       // dialog for key file
         QFile keyFile(filename);
         if (keyFile.open(QIODevice::ReadOnly | QIODevice::Text))
@@ -183,15 +189,18 @@ MainWindow::MainWindow(QWidget *parent)
             QTextStream qts(&keyFile);
             qts >> temp;
             keyEdit2->setText(temp);
+            qts >> temp;
+            keyMod2->setText(temp);
             keyBtn2->setText("Key Opened");
         }
     });
 
     QPushButton *decryptBtn = new QPushButton("Decrypt", decryptPage);     // button to decrypt ciphertext
     decryptBtn->setSizePolicy(spGrow);
-    connect(decryptBtn, &QPushButton::clicked, [ciphertextField2, keyEdit2, plaintextField2] {
-        mp::mpz_int numMessage = rsa::stringToMpz_int(ciphertextField2->toPlainText());
-        auto encodedNumMessage = rsa::encryptOrDecrypt(numMessage, keyEdit2->toPlainText());
+    connect(decryptBtn, &QPushButton::clicked, [ciphertextField2, keyEdit2, keyMod2, plaintextField2] {
+        mp::mpz_int numMessage = rsa::stringToMpz_int(ciphertextField2->toPlainText().toStdString());
+        rsa::Key tempKey{rsa::stringToMpz_int(keyEdit2->toPlainText().toStdString()), rsa::stringToMpz_int(keyMod2->toPlainText().toStdString())};
+        auto encodedNumMessage = rsa::encryptOrDecrypt(numMessage, tempKey);
         plaintextField2->setText(encodedNumMessage);
     });
 
