@@ -222,7 +222,7 @@ namespace rsa
            d.convert_to<std::string>().c_str());
 
     auto resultKeys = std::make_pair(Key{e, n}, Key{d, n});
-    detail::writeKeysToDisk(resultKeys);
+    detail::writeKeysToDisk(resultKeys, directory);
 
     return resultKeys;
   }
