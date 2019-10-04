@@ -140,12 +140,13 @@ MainWindow::MainWindow(QWidget *parent)
         if (keyFile.open(QIODevice::ReadOnly | QIODevice::Text))
         {
             QTextStream qts(&keyFile);
-            QString temp;
+            QString temp, temp2;
             qts >> temp;
             keyEdit->setText(temp);
-            qts >> temp;
-            keyMod->setText(temp);
+            qts >> temp2;
+            keyMod->setText(temp2);
             keyBtn->setText("Key Opened");
+            keyBtn->setToolTip("Exponent: " + temp + "\nModulus: " + temp2);
         }
     });
 
@@ -191,13 +192,14 @@ MainWindow::MainWindow(QWidget *parent)
         QFile keyFile(filename);
         if (keyFile.open(QIODevice::ReadOnly | QIODevice::Text))
         {
-            QString temp;
+            QString temp, temp2;
             QTextStream qts(&keyFile);
             qts >> temp;
             keyEdit2->setText(temp);
-            qts >> temp;
-            keyMod2->setText(temp);
+            qts >> temp2;
+            keyMod2->setText(temp2);
             keyBtn2->setText("Key Opened");
+            keyBtn2->setToolTip("Exponent: " + temp + "\nModulus: " + temp2);
         }
     });
 
@@ -207,7 +209,7 @@ MainWindow::MainWindow(QWidget *parent)
         mp::mpz_int numMessage = rsa::stringToMpz_int(ciphertextField2->toPlainText().toStdString());
         rsa::Key tempKey{rsa::stringToMpz_int(keyEdit2->toPlainText().toStdString()), rsa::stringToMpz_int(keyMod2->toPlainText().toStdString())};
         auto encodedNumMessage = rsa::encryptOrDecrypt(numMessage, tempKey);
-        plaintextField2->setText(QString::fromStdString(encodedNumMessage.convert_to<std::string>()));
+        plaintextField2->setText(QString::fromStdString(mpz_intToString(encodedNumMessage)));
     });
 
     QPushButton *back3 = new QPushButton("Back", keyPage);
