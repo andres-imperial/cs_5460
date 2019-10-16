@@ -1,0 +1,40 @@
+int main()
+   var plaintext
+   get(plaintext)                                        // get text to be hashed
+   var[] blocks = getBlocks(plaintext.AlNumOnly)         // separate into blocks
+   var[] intBlocks = operation(blocks, AlNumOnly.length) // ?
+   print("Hash: " + fixLength(intBlocks)                 // print hashed value
+
+// create blocks from a shifted bitwise OR of each 4-character chunk
+var[] getBlocks(var plaintext)
+   var chunk = 0
+   var blocks;
+   for (var i = 0; i < plaintext.length; i += 4) // for each chunk
+      chunk = 0
+      for (j = 0 to 4)                           // for each character in chunk
+         chunk = chunk << 8                      // shift chunk left 8 bits
+         if (j + i < plaintext.length)
+            var temp = plaintext(j+i)
+            chunk = chunk | temp                 // bitwise OR with current char
+      blocks.push(chunk)
+   return blocks
+
+// bitwise OR a left and right shift of each block to the power of the total length
+var[] operation(var[] blocks, var length)
+   var intBlocks
+   for (i in blocks)
+      var temp = pow(blocks[i], length)
+      var shift = temp % 32
+      var hashedBlock = (temp << shift) | (temp >> (temp.size * 32 - shift))
+      intBlocks.push(hashedBlock)
+   return intBlocks
+
+fixLength(var[] blocks)
+   var temp
+   var finalHash = 0
+   var fixedLength = pow(2, 128)     // fixed size of 128 bits
+   for (i in blocks)
+      temp = blocks[i] % fixedLength // mod block to fixed size
+      finalHash += temp              // add next block to final val
+      finalHash %= fixedLength       // fix size again with mod
+   return finalHash
