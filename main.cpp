@@ -19,7 +19,7 @@ int main(int argc, char *argv[])
 {
   if (argc != 2) {
     throw std::runtime_error(
-        "Program expected one arguments: plaintext message, ciphertext message.");
+        "Program expected one argument: plaintext message");
   }
 
   std::string plaintext = argv[1];
