@@ -66,7 +66,6 @@ namespace hash
       mp::mpz_int hashedBlock = (raisedBlock << intShift) | (raisedBlock >> (bitSize - intShift)); // Circular bit shift with shift value
       mpzBlocks.push_back(hashedBlock);
     }
-
     return mpzBlocks;
   }
 
@@ -80,7 +79,6 @@ namespace hash
     mpz_init(fixedLength);
     mpz_ui_pow_ui(fixedLength, 2, 128); // Raise 2 to 128 to get our fixed length
 
-
     for (int i = 0; i < blocks.size(); i++)
     {
       mpz_t temp;
@@ -90,9 +88,6 @@ namespace hash
       finalHashValue += tempBlock; // add value to final hash
       finalHashValue = finalHashValue % fixedLength; // Mod final hash by our fixed length
     }
-    return final;
+    return finalHashValue;
   }
-
-  
- 
 }
