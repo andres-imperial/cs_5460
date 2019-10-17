@@ -1,34 +1,37 @@
-int main()
+var main()
    var plaintext
    get(plaintext)                                        // get text to be hashed
    var[] blocks = getBlocks(plaintext.AlNumOnly)         // separate into blocks
-   var[] intBlocks = operation(blocks, AlNumOnly.length) // ?
-   print("Hash: " + fixLength(intBlocks)                 // print hashed value
+   var[] intBlocks = operation(blocks, AlNumOnly.length) // calculate integers
+   print("Hash: " + fixLength(intBlocks))                // print hashed value
 
-// create blocks from a shifted bitwise OR of each 4-character chunk
+// create 32-bit blocks from each 4-character chunk in plaintext
 var[] getBlocks(var plaintext)
    var chunk = 0
-   var blocks;
+   var[] blocks;
    for (var i = 0; i < plaintext.length; i += 4) // for each chunk
       chunk = 0
       for (j = 0 to 4)                           // for each character in chunk
          chunk = chunk << 8                      // shift chunk left 8 bits
          if (j + i < plaintext.length)
-            var temp = plaintext(j+i)
+            var temp = plaintext[j+i]
             chunk = chunk | temp                 // bitwise OR with current char
-      blocks.push(chunk)
+      blocks.append(chunk)
    return blocks
 
-// bitwise OR a left and right shift of each block to the power of the total length
+// raise each block value to the power of message length, then perform a bitwise 
+// OR on a left and right shift of each new value (shift length varies with value)
 var[] operation(var[] blocks, var length)
-   var intBlocks
+   var[] intBlocks
    for (i in blocks)
       var temp = pow(blocks[i], length)
-      var shift = temp % 32
-      var hashedBlock = (temp << shift) | (temp >> (temp.size * 32 - shift))
-      intBlocks.push(hashedBlock)
+      var leftShift = temp % 32
+      var rightShift = temp.size * 32 - shift
+      var hashedBlock = (temp << leftShift) | (temp >> rightShift)
+      intBlocks.append(hashedBlock)
    return intBlocks
 
+// fix max length to 128 bits
 fixLength(var[] blocks)
    var temp
    var finalHash = 0

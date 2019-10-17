@@ -1,9 +1,9 @@
-Efficient: Out algorithm mostly consists of bitwise ORs and shifts, which are not very intensive operations. The most expensive task is the pow() in the operation() function, and it only happens once for each block.
+Efficient: Our algorithm mostly consists of bitwise ORs and shifts, which are not very intensive operations. The most expensive task is the pow() in the operation() function, and it only happens once for each block.
 
 Deterministic: There are no random operations anywhere in our algorithm, so the same string will have to produce the same hash value each time.
 
 Pre-Image Resistant: Each block of 4 characters is combined with a bitwise OR and the blocks are added together at the end, so any change to an individual character will change the entire block, which will then significantly change the final hash.
 
-Collision Resistant: We have a fixed output of 128 bits that comes from each character's binary code being merged together, so the likelihood of another string producing the same hash is negligible.
+Collision Resistant: We have a fixed max output length of 128 bits that comes from each character's binary code being merged together, so the likelihood of another string producing the same hash is negligible.
 
 One-Way Function: Taking the modulus when we fix the length and combine our blocks prevents anybody from working their way backwards through the algorithm.
