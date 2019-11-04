@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <meta charset="UTF-8">
+   <title>User Info</title>
+      
+   <!-- Compiled and minified JavaScript -->
+   <script src="jquery-3.2.1.min.js"></script>
+            
+   <!--Let browser know website is optimized for mobile-->
+   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+   <link href="style.css" rel="stylesheet">
+   <script src="currex.js" defer></script>
+</head>
+    
+<body>
+	<div class="card">
+		<h2>User Info</h2>
+
+		<section id="formPage" class="tabContent">
+			<form id="form" class="needs-validation" novalidate onsubmit="return false">
+				<h3>Personal Information</h3>
+				<ul>
+					<li>
+						<label for="fname">First Name</label>
+						<input type="text" id="fname" name="fname" placeholder="First Name Here" required>
+					</li>
+					<li>
+						<label for="lname">Last Name</label>
+						<input type="text" id="lname" name="lname" placeholder="Last Name Here" required>
+					</li>
+					<li>
+						<label for="address">Date of Birth</label>
+						<input type="text" id="dob" name="dob" placeholder="DOB Here" required>
+					</li>
+					<li>
+						<label for="phone">Cell Phone</label>
+						<input type="text" id="phone" name="phone" placeholder="Phone # Here" required>
+					</li>
+					<li>
+						<label for="address">Address</label>
+						<input type="text" id="address" name="address" placeholder="Address Here" required>
+					</li>
+					<li>
+						<label for="address">Apt No.</label>
+						<input type="text" id="apt" name="apt" placeholder="Apt Number Here" required>
+					</li>
+					<li>
+						<label for="city">City</label>
+						<input type="text" id="city" name="city" placeholder="City Here" required>
+					</li>
+					<li>
+						<label for="state" required>State</label>
+						<input type="text" id="state" name="state" placeholder="State Here" required>
+					</li>
+					<li>
+						<label for="zip">Zip Code</label>
+						<input type="text" id="zip" name="zip" placeholder="Zip Code Here">
+					</li>
+					<li>
+						<label for="email">Email</label>
+						<input type="text" id="email" name="email" placeholder="Email Here" required>
+					</li>
+					
+					<li>
+						<button type="submit">Submit</button>
+					</li>
+				</ul>
+			</form>
+		</section>
+	</div>
+</body>
+</html>
