@@ -1,66 +1,40 @@
-// class for user info in task 2
-var formObj = {};
-
-function initValidation(formName) {
-    window.addEventListener("load", function() {
-        var form = document.querySelector(formName);
-        form.addEventListener("submit", function(event) {
-            if (form.checkValidity() == false) {
-                event.preventDefault();
-                event.stopPropagation();
-            }
-            form.classList.add("was-validated");
-            
-            formObj.fname = document.getElementById("fname").value;
-            formObj.lname = document.getElementById("lname").value;
-            formObj.address = document.getElementById("address").value;
-            formObj.city = document.getElementById("city").value;
-            formObj.state = document.getElementById("state").value;
-            formObj.zip = document.getElementById("zip").value;
-            formObj.phone = document.getElementById("phone").value;
-            formObj.email = document.getElementById("email").value;
-            formObj.uname = document.getElementById("username").value;
-            formObj.pword = document.getElementById("password").value;
-            formObj.origin = [];
-            formObj.comment = document.getElementById("comments").value;
-            
-            var checks = document.getElementsByName("origin");
-            for (var i in checks) {
-                if (checks[i].checked)
-                    formObj.origin.push(checks[i].value);
-            }
-            var radios = document.getElementsByName("rating");
-            for (var j in radios) {
-                if (radios[j].checked)
-                    formObj.rating = radios[i].value;
-            }
-            
-            window.alert("Thanks!\nHere are your Results:\n" + JSON.stringify(formObj, null, 4));
-        });
-    }, false);
+var testObj = {
+      firstName: 'Cole',
+      lastName: 'Buhman',
+      dob: '03/01/1998',
+      phone: '8017661234',
+      street: '945 X Bird Lane',
+      apt: '709',
+      city: 'Logan',
+      state: 'Utah',
+      zip: '84040',
+      email: 'buhman_cole.den@gmail.com'
 }
 
 var lookup = ["first name", "last name", "date of birth", "phone number", "address", "email"];
 
-function basicELCP2() {
+function basicELCP2(obj) {
 	// initial list
 	var userInfo = [];
-	userInfo += obj.fname;
+	userInfo += obj.firstName;
 	userInfo += "";
 	
-	userInfo += obj.lname;
+	userInfo += obj.lastName;
 	userInfo += "";
 	
-	userInfo += obj.dob; // need to know how it's stored to grab year/etc
+    var dTemp = obj.dob.split("/");
+    userInfo += dTemp[0];
+    userInfo += dTemp[1];
+    userInfo += dTemp[2];
+    userInfo += dTemp[2].substring(2);
 	userInfo += "";
 	
-	userInfo += obj.phone;
 	userInfo += obj.phone.substring(0, 3);
 	userInfo += obj.phone.substring(3, 6);
 	userInfo += obj.phone.substring(6);
 	userInfo += "";
 	
-	var aTemp = obj.address.split();
+	var aTemp = obj.street.split();
 	for (var i = 0; i < aTemp.size; ++i) {
 		userInfo += aTemp[i];
 	}
@@ -70,17 +44,17 @@ function basicELCP2() {
 	userInfo += obj.zip;
 	userInfo += "";
 	
-	var re = /[._\s]/;
+	var re = /[._]/;
 	var eTemp = obj.email.split("@")[0].split(re);
-	for (var i = 0; i < eTemp.size; ++i) {
-		userInfo += eTemp[i];
+	for (var j = 0; j < eTemp.size; ++j) {
+		userInfo += eTemp[j];
 	}
 	
 	return userInfo;
 }
 
-function finalECLP2() {
-	var finalPW = basicELCP2();
+function finalECLP2(obj) {
+	var finalPW = basicELCP2(obj);
 	var replacements = ["a@", "i!", "s$", "s5"];
 	for (var i = 0; i < replacements.size; ++i) {
 		for (var j = 0; j < finalPW.size; ++j) {
@@ -91,62 +65,5 @@ function finalECLP2() {
 			}
 		}
 	}
-}
-
-function validateForm() {
-    var $x = $("input[required]")
-    $x.each(function() {
-        checkRequired($(this).attr("id"), "Required");
-    });
-    checkFormat("zip", "Wrong Format", /^$|^[0-9]{5}$/);
-    checkFormat("phone", "Wrong Format", /^[0-9]{3}-?[0-9]{3}-?[0-9]{4}$/);
-    checkFormat("email", "Wrong Format", /^[a-zA-Z0-9_.-]+@[a-z0-9-]+\.[a-z.-]+$/);
-    checkFormat("password", "Wrong Format", /^(?=.*[A-Z])([a-zA-Z0-9_]{8,})/);
-    checkButtons("origin", "Required");
-    checkButtons("rating", "Required");
-}
-
-function checkRequired(fieldName, message) {
-    var field = document.getElementById(fieldName);
-    if (field.value.length > 0) {
-        field.setCustomValidity("");
-        if (field.parentElement.querySelector("p")) // rm error message
-            $(field.parentElement.lastChild).remove();
-    } else {
-        field.setCustomValidity(message);
-        if (!field.parentElement.querySelector("p")) // add error message
-            $(field).after("<p style='margin:0; padding:5px; color:red;'>" + message + "</p>");
-    }
-    
-    formValidated();
-    return field.value.length > 0 ? true : false;
-}
-
-function checkFormat(fieldName, message, re) {
-    var field = document.getElementById(fieldName);
-    if (field.value.match(re)) {
-        field.setCustomValidity("");
-        if (field.parentElement.querySelector("p")) // rm error message
-            $(field.parentElement.lastChild).remove();
-    }
-    else {
-        field.setCustomValidity(message);
-        if (!field.parentElement.querySelector("p")) // add error message
-            $(field).after("<p style='margin:0; padding:5px; color:red;'>" + message + "</p>");
-    }
-    
-    formValidated();
-    return field.value.match(re) ? true : false;
-}
-
-function formValidated() {
-    var form = document.querySelector(".needs-validation");
-    form.classList.add('was-validated');
-}
-
-//var $form = $("#form");
-var password;
-function definePassword() {
-	password = $("#form ul li input#password").val();
-	console.log(password);
+    return finalPW;
 }
