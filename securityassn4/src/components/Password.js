@@ -15,9 +15,18 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { useFormik } from 'formik';
 import Box from '@material-ui/core/Box';
+import text from '../ELCP01.txt';
 
-const checkDictionary = ({ password }) => {
-
+const checkIfUserPasswordInDictionary = async ({ password }) => {
+  let passwordIsPresent = false;
+  fetch(text)
+    .then(result => result.text())
+    .then(resText => {
+      const passwordArray = resText.split('\n')
+      passwordIsPresent = passwordArray.includes(password);
+      console.log(passwordIsPresent)
+    })
+  return passwordIsPresent;
 }
 
 const Password = () => {
@@ -27,7 +36,7 @@ const Password = () => {
     },
     onSubmit: values => {
       //alert(JSON.stringify(values, null, 2));
-      checkDictionary(values)
+      checkIfUserPasswordInDictionary(values)
     },
   });
   return (
