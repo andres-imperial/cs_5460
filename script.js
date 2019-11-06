@@ -13,8 +13,26 @@ var testObj = {
 
 var lookup = ["first name", "last name", "date of birth", "phone number", "address", "email"];
 
+function getLookup(list, str) {
+    var iter = 0;
+    for (var i = 0; i < list.length; ++i) {
+        if (list[i] == "")
+            ++iter;
+        else if (list[i] == str)
+            return lookup[iter];
+    }
+    return "error";
+}
+
+function simplify(objx) {
+    var obj = {};
+    for (var x in objx) {
+        obj[x] = objx[x].toLowerCase();
+    }
+    return obj;
+}
+
 function basicELCP2(obj) {
-	// initial list
 	var userInfo = [];
     
 	userInfo.push(obj.firstName);
@@ -55,9 +73,10 @@ function basicELCP2(obj) {
 	return userInfo;
 }
 
-function finalECLP2(obj) {
+function finalECLP2(objx) {
+    var obj = simplify(objx);
 	var finalPW = basicELCP2(obj);
-	var rplc = ["a@", "b8", "c(", "d6", "e3", "g9", "h#", "i1", "i!", "k<", "l1", "l|", "o0", "q9", "s5", "s$", "t7", "t+", "v<", "v>", "x%", "y?"];//, "s$", "s5"];
+	var rplc = ["a@", "b8", "c(", "d6", "e3", "g9", "h#", "i1", "i!", "k<", "l1", "l|", "o0", "q9", "s5", "s$", "t7", "t+", "v<", "v>", "x%", "y?"];
 	for (var i = 0; i < rplc.length; ++i) {
 		for (var j = 0; j < finalPW.length; ++j) {
 			for (var k = 0; k < finalPW[j].length; ++k) {
