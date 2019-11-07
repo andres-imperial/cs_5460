@@ -31,40 +31,66 @@ const App = () => {
 
   return (
     <div>
-      <h1>This is the login form</h1>
-      <p>Create Account stuff</p>
-      <li><Link to='/form'>Create Account To Take you to a form</Link></li>
+      <h1 style={{ padding: 10 }}>Login</h1>
       <Box
-        display="flex"
+        display='flex'
         border={1}
         flexDirection='column'
         alignItems='center'
       >
         <form
           onSubmit={formik.handleSubmit}
-          style={{ display: 'flex', flexDirection:'column', justifyContent: 'center', alignItems: 'center' }}
+          style={styles.form}
         >
-          <label htmlFor="userName">UserName</label>
-          <input
-            id="userName"
-            name="userName"
-            type="text"
-            onChange={formik.handleChange}
-            value={formik.values.userName}
-          />
-          <label htmlFor="password">Password</label>
-          <input
-            id="password"
-            name="password"
-            type="password"
-            onChange={formik.handleChange}
-            value={formik.values.password}
-          />
-          <button type="submit">Submit</button>
+          <div style={styles.input}>
+            <label style={styles.label} htmlFor='userName'>UserName:</label>
+            <input
+              id='userName'
+              name='userName'
+              type='text'
+              onChange={formik.handleChange}
+              value={formik.values.userName}
+            />
+          </div>
+          <div style={styles.input}>
+            <label style={styles.label} htmlFor='password'>Password:</label>
+            <input
+              id='password'
+              name='password'
+              type='password'
+              onChange={formik.handleChange}
+              value={formik.values.password}
+            />
+          </div>
+          <button style={styles.button} type='submit'>Submit</button>
         </form>
+        <p>Don't have an account?
+          <li style={{ listStyleType: 'none' }}>
+            <Link to='/form'>Create Account</Link>
+          </li>
+        </p>
+
       </Box>
     </div>
   );
+}
+
+const styles = {
+  form: {
+    display: 'flex',
+    flexDirection: 'column',
+    width: '25%'
+  },
+  label: {},
+  input: {
+    padding: 2,
+    display: 'flex',
+    justifyContent: 'space-between',
+  },
+  button: {
+    width: '50%',
+    alignSelf: 'center'
+  }
 }
 
 export default App;
