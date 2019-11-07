@@ -1,24 +1,11 @@
-var testObj = {
-  firstName: 'Cole',
-  lastName: 'Buhman',
-  dob: '03/01/1998',
-  phone: '8017661234',
-  street: '945 X Bird Lane',
-  apt: '709',
-  city: 'Logan',
-  state: 'Utah',
-  zip: '84040',
-  email: 'buhman_cole.den@gmail.com'
-}
-
 var lookup = ["first name", "last name", "date of birth", "phone number", "address", "email"];
 
 function getLookup(list, str) {
   var iter = 0;
   for (var i = 0; i < list.length; ++i) {
-    if (list[i] == "")
+    if (list[i] === "")
       ++iter;
-    else if (list[i] == str)
+    else if (list[i] === str)
       return lookup[iter];
   }
   return "error";
@@ -80,7 +67,7 @@ function finalECLP2(objx) {
   for (var i = 0; i < rplc.length; ++i) {
     for (var j = 0; j < finalPW.length; ++j) {
       for (var k = 0; k < finalPW[j].length; ++k) {
-        if (finalPW[j].charAt(k) == rplc[i].charAt(0)) {
+        if (finalPW[j].charAt(k) === rplc[i].charAt(0)) {
           finalPW.splice(j + 1, 0, finalPW[j].replace(rplc[i].charAt(0), rplc[i].charAt(1)));
         }
       }

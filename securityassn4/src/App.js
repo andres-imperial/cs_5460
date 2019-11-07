@@ -9,6 +9,7 @@ const App = () => {
   const [loginMessage, setLoginMessage] = useState(null);
   const [badLoginAttempts, setBadLoginAttempts] = useState(0);
   const [showModal, setShowModal] = useState(false);
+  const [timeoutExponent, setTimeoutExponent] = useState(-1);
 
   useEffect(() => {
     const tempSalt = CryptoJS.lib.WordArray.random(4);
@@ -16,7 +17,20 @@ const App = () => {
     if (localStorage.getItem('salt') == null) {
       localStorage.setItem('salt', salt);
     }
-  }, [])
+  }, []);
+
+  useEffect(() => {
+    if (badLoginAttempts % 3 === 0 && badLoginAttempts !== 0) {
+      setShowModal(true);
+      setTimeoutExponent((badLoginAttempts / 3) - 1);
+    }
+  }, [badLoginAttempts]);
+
+  useEffect(() => {
+    let timer1 = setTimeout(() => setShowModal(false), (2 ** timeoutExponent) * 1000)
+
+    return () => clearTimeout(timer1)
+  }, [timeoutExponent]);
 
   const formik = useFormik({
     initialValues: {
@@ -29,16 +43,13 @@ const App = () => {
       let hashedPassword = ''
       hashedPasswordArray.forEach(item => {
         hashedPassword += item.toString();
-      })
+      });
       if (hashedPassword === localStorage.getItem('password')) {
         setLoginMessage('Successful Login');
+        setBadLoginAttempts(0);
       } else {
         setLoginMessage('Error Logging In');
         setBadLoginAttempts(badLoginAttempts + 1);
-        console.log(badLoginAttempts);
-        //after 3 times lockout for 2^0 minutes
-        //after 3 more times lockout for 2^1 minutes
-        //on successful login reset back to 2^0 minutes
       }
     }
   });
@@ -89,12 +100,13 @@ const App = () => {
             null
         }
       </Box>
-      <ReactModal
+      <Modal
         isOpen={showModal}
         contentLabel="Minimal Modal Example"
+        ariaHideApp={false}
       >
-        {/* <button onClick={setShowModal(false)}>Close Modal</button> */}
-      </ReactModal>
+        <p>Error Logging In. This Modal will close in {(2 ** timeoutExponent)} minutes.</p>
+      </Modal>
     </div>
   );
 }

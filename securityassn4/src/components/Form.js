@@ -1,10 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import Box from '@material-ui/core/Box';
 import { useFormik } from 'formik';
 import { finalECLP2 } from '../script';
 
 const Form = () => {
+  const [accountMessage, setAccountMessage] = useState(null);
+  const [showNextButton, setShowNextButton] = useState(null);
+
   const formik = useFormik({
     initialValues: {
       firstName: '',
@@ -19,16 +22,20 @@ const Form = () => {
       email: ''
     },
     onSubmit: values => {
-      const passwordArray = finalECLP2(values);
-      localStorage.setItem("password array", JSON.stringify(passwordArray));
-      //check if certain values are not filled in, and alert to them
+      if (Object.values(values).includes('')) {
+        setAccountMessage("Not All Values Filled In. Please Try Again.")
+      } else {
+        const passwordArray = finalECLP2(values);
+        localStorage.setItem("password array", JSON.stringify(passwordArray));
+        setAccountMessage("Success. Click Below to Move To The Password Creation Page")
+        setShowNextButton(true);
+      }
     },
   });
 
   return (
     <div>
       <h1>Form</h1>
-      <li><Link to='/password'>Go to page to create password</Link></li>
       <Box
         display='flex'
         border={1}
@@ -141,6 +148,18 @@ const Form = () => {
           </div>
           <button style={styles.button} type='submit'>Submit</button>
         </form>
+        {
+          accountMessage ?
+            <p>{accountMessage}</p> :
+            null
+        }
+        {
+          showNextButton ?
+            <li style={{ listStyleType: 'none' }}>
+              <Link to='/password'>Click Here To Create Password</Link>
+            </li> :
+            null
+        }
       </Box>
     </div>
   )

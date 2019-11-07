@@ -20,10 +20,9 @@ const checkIfUserPasswordInDictionary = async password => {
 const Password = () => {
   const [passwordPresent, setPasswordPresent] = useState(null);
   const [elcp02, setelcp02] = useState([]);
+  const [showNextButton, setShowNextButton] = useState(null);
 
-  useEffect(() => {
-    setelcp02(localStorage.getItem('password array'));
-  }, []);
+  useEffect(() => setelcp02(localStorage.getItem('password array')), []);
 
   const formik = useFormik({
     initialValues: {
@@ -34,10 +33,10 @@ const Password = () => {
       const passwordArray2 = JSON.parse(elcp02);
       checkIfUserPasswordInDictionary(password)
         .then(present => {
-          if (present) setPasswordPresent('The entered password is subject to a dictionary attack.');
+          if (present) setPasswordPresent('The entered password is subject to a dictionary attack. Please try again.');
           else if (passwordArray2.includes(password)) {
             const message = getLookup(passwordArray2, password);
-            setPasswordPresent(`The entered password is subject to a targeted attack because it is related to ${message}.`)
+            setPasswordPresent(`The entered password is subject to a targeted attack because it is related to ${message}. Please try again.`)
           }
           else {
             const saltedPassword = password + localStorage.getItem('salt');
@@ -48,6 +47,7 @@ const Password = () => {
             })
             localStorage.setItem('password', hashedPassword);
             setPasswordPresent('Account Created')
+            setShowNextButton(true);
           }
         });
     }
@@ -56,7 +56,6 @@ const Password = () => {
   return (
     <div>
       <h1>Password</h1>
-      <li><Link to='/'>Takes you back to login page</Link></li>
       <Box
         display='flex'
         border={1}
@@ -82,6 +81,13 @@ const Password = () => {
         {
           passwordPresent ?
             <p>{passwordPresent}</p> :
+            null
+        }
+        {
+          showNextButton ?
+            <li style={{ listStyleType: 'none' }}>
+              <Link to='/'>Return To Login Page</Link>
+            </li> :
             null
         }
       </Box>
