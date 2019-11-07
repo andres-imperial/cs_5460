@@ -156,6 +156,22 @@ namespace genPasswords
         results[i].push_back(reverseWord);
         results[i].push_back(reverseWord + reverseWord);
       }
+      auto temp = results[i]; 
+      for (auto word : results[i])
+      {
+        for (int i = 0; i < 10; ++i)
+        {
+          auto newPassword = word + std::to_string(i);
+          temp.push_back(newPassword);
+          temp.push_back(newPassword + "!");
+          temp.push_back(newPassword + "@");
+          temp.push_back(newPassword + "#");
+          temp.push_back(newPassword + "$");
+          temp.push_back(newPassword + "%");
+          temp.push_back(newPassword + "&");
+        }
+      }
+      results[i] = temp;
     }
 
     wordSet = results;
