@@ -1,23 +1,22 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Box from '@material-ui/core/Box';
 import { useFormik } from 'formik';
+import CryptoJS from 'crypto-js';
+import Modal from 'react-modal';
 
 const App = () => {
+  const [loginMessage, setLoginMessage] = useState(null);
+  const [badLoginAttempts, setBadLoginAttempts] = useState(0);
+  const [showModal, setShowModal] = useState(false);
 
-  //page with form to enter in info
-  //page to create password
-  //page to login
-
-  //user enters in username and password **Done**
-  //check to see if password entered concatenated with salt and hashed
-  //  matches stored hash
-  //if they enter in the password incorrectly, they can have 3 failed login attempts
-  //after which they are locked out for 2^0 minutes
-  //3 more times 
-  //2^1
-  //etc.
-  //after successful attempt reset number of lockouts to 0
+  useEffect(() => {
+    const tempSalt = CryptoJS.lib.WordArray.random(4);
+    const salt = tempSalt.words[0].toString();
+    if (localStorage.getItem('salt') == null) {
+      localStorage.setItem('salt', salt);
+    }
+  }, [])
 
   const formik = useFormik({
     initialValues: {
@@ -25,8 +24,23 @@ const App = () => {
       password: '',
     },
     onSubmit: values => {
-      alert(JSON.stringify(values, null, 2));
-    },
+      const saltedPassword = values.password + localStorage.getItem('salt');
+      const hashedPasswordArray = CryptoJS.SHA1(saltedPassword).words;
+      let hashedPassword = ''
+      hashedPasswordArray.forEach(item => {
+        hashedPassword += item.toString();
+      })
+      if (hashedPassword === localStorage.getItem('password')) {
+        setLoginMessage('Successful Login');
+      } else {
+        setLoginMessage('Error Logging In');
+        setBadLoginAttempts(badLoginAttempts + 1);
+        console.log(badLoginAttempts);
+        //after 3 times lockout for 2^0 minutes
+        //after 3 more times lockout for 2^1 minutes
+        //on successful login reset back to 2^0 minutes
+      }
+    }
   });
 
   return (
@@ -57,7 +71,7 @@ const App = () => {
             <input
               id='password'
               name='password'
-              type='password'
+              type='text'
               onChange={formik.handleChange}
               value={formik.values.password}
             />
@@ -69,8 +83,18 @@ const App = () => {
             <Link to='/form'>Create Account</Link>
           </li>
         </p>
-
+        {
+          loginMessage ?
+            <p>{loginMessage}</p> :
+            null
+        }
       </Box>
+      <ReactModal
+        isOpen={showModal}
+        contentLabel="Minimal Modal Example"
+      >
+        {/* <button onClick={setShowModal(false)}>Close Modal</button> */}
+      </ReactModal>
     </div>
   );
 }
@@ -79,7 +103,7 @@ const styles = {
   form: {
     display: 'flex',
     flexDirection: 'column',
-    width: '25%'
+    width: '40%'
   },
   label: {},
   input: {

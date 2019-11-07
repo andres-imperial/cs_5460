@@ -1,9 +1,8 @@
-//pass values gathered to program that generates list of potential passwords
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import Box from '@material-ui/core/Box';
 import { useFormik } from 'formik';
+import { finalECLP2 } from '../script';
 
 const Form = () => {
   const formik = useFormik({
@@ -20,7 +19,8 @@ const Form = () => {
       email: ''
     },
     onSubmit: values => {
-      // alert(JSON.stringify(values, null, 2));
+      const passwordArray = finalECLP2(values);
+      localStorage.setItem("password array", JSON.stringify(passwordArray));
       //check if certain values are not filled in, and alert to them
     },
   });
@@ -150,7 +150,7 @@ const styles = {
   form: {
     display: 'flex',
     flexDirection: 'column',
-    width: '25%'
+    width: '40%'
   },
   label: {},
   input: {

@@ -88,3 +88,5 @@ function finalECLP2(objx) {
   }
   return finalPW;
 }
+
+export { finalECLP2, getLookup }; 

@@ -1,48 +1,56 @@
-//password creation
-//password validation to check against the lists
-//if match is found, do a bad thing, make a stronger password
-//else create the account
-
-
-//storing the password
-//generate a salt
-//concatenate salt to password
-//compute hash digest on whole concatenated salt/password
-//store the hash in a password storage file
-//store salt in separate file
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useFormik } from 'formik';
 import Box from '@material-ui/core/Box';
 import text from '../ELCP01.txt';
+import { getLookup } from '../script';
+import CryptoJS from 'crypto-js';
 
-const checkIfUserPasswordInDictionary = async ({ password }) => {
+const checkIfUserPasswordInDictionary = async password => {
   let passwordIsPresent = false;
   await fetch(text)
     .then(result => result.text())
     .then(resText => {
-      const passwordArray = resText.split('\n')
-      passwordIsPresent = passwordArray.includes(password);
+      const passwordArray1 = resText.split('\n');
+      passwordIsPresent = passwordArray1.includes(password);
     })
   return passwordIsPresent;
 }
 
 const Password = () => {
-  const [passwordPresent, setPasswordPresent] = useState(false);
+  const [passwordPresent, setPasswordPresent] = useState(null);
+  const [elcp02, setelcp02] = useState([]);
+
+  useEffect(() => {
+    setelcp02(localStorage.getItem('password array'));
+  }, []);
+
   const formik = useFormik({
     initialValues: {
       password: '',
     },
-
     onSubmit: values => {
-      //alert(JSON.stringify(values, null, 2));
-      checkIfUserPasswordInDictionary(values)
+      const { password } = values;
+      const passwordArray2 = JSON.parse(elcp02);
+      checkIfUserPasswordInDictionary(password)
         .then(present => {
-          if (present) setPasswordPresent(present);
-          //else do account creation
+          if (present) setPasswordPresent('The entered password is subject to a dictionary attack.');
+          else if (passwordArray2.includes(password)) {
+            const message = getLookup(passwordArray2, password);
+            setPasswordPresent(`The entered password is subject to a targeted attack because it is related to ${message}.`)
+          }
+          else {
+            const saltedPassword = password + localStorage.getItem('salt');
+            const hashedPasswordArray = CryptoJS.SHA1(saltedPassword).words;
+            let hashedPassword = ''
+            hashedPasswordArray.forEach(item => {
+              hashedPassword += item.toString();
+            })
+            localStorage.setItem('password', hashedPassword);
+            setPasswordPresent('Account Created')
+          }
         });
-    },
+    }
   });
 
   return (
@@ -73,7 +81,7 @@ const Password = () => {
         </form>
         {
           passwordPresent ?
-            <p>Error: This password is one that is commonly used or is based on your user info. Please try again to make a stronger password.</p> :
+            <p>{passwordPresent}</p> :
             null
         }
       </Box>
@@ -85,7 +93,7 @@ const styles = {
   form: {
     display: 'flex',
     flexDirection: 'column',
-    width: '25%'
+    width: '40%'
   },
   label: {},
   input: {
