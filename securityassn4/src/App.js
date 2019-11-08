@@ -106,7 +106,7 @@ const App = () => {
         contentLabel="Minimal Modal Example"
         ariaHideApp={false}
       >
-        <p>Error Logging In. This Modal will close in {(2 ** timeoutExponent)} minutes.</p>
+        <p>Error Logging In. This Modal will close in {(2 ** timeoutExponent)} minute(s).</p>
       </Modal>
     </div>
   );
