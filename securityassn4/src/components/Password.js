@@ -45,7 +45,8 @@ const Password = () => {
             hashedPasswordArray.forEach(item => {
               hashedPassword += item.toString();
             })
-            localStorage.setItem('password', hashedPassword);
+            let username = localStorage.getItem('username');
+            localStorage.setItem(username, hashedPassword);
             setPasswordPresent('Account Created')
             setShowNextButton(true);
           }

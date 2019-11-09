@@ -27,6 +27,7 @@ const Form = () => {
       } else {
         const passwordArray = finalECLP2(values);
         localStorage.setItem("password array", JSON.stringify(passwordArray));
+        localStorage.setItem("username", values.email);
         setAccountMessage("Success. Click Below to Move To The Password Creation Page")
         setShowNextButton(true);
       }

@@ -27,7 +27,7 @@ const App = () => {
   }, [badLoginAttempts]);
 
   useEffect(() => {
-    let timer1 = setTimeout(() => setShowModal(false), (2 ** timeoutExponent) * 1000)
+    let timer1 = setTimeout(() => setShowModal(false), (2 ** timeoutExponent) * 60000)
 
     return () => clearTimeout(timer1)
   }, [timeoutExponent]);
@@ -44,7 +44,8 @@ const App = () => {
       hashedPasswordArray.forEach(item => {
         hashedPassword += item.toString();
       });
-      if (hashedPassword === localStorage.getItem('password')) {
+      let username = values.userName;
+      if (hashedPassword === localStorage.getItem(username)) {
         setLoginMessage('Successful Login');
         setBadLoginAttempts(0);
       } else {
@@ -105,7 +106,7 @@ const App = () => {
         contentLabel="Minimal Modal Example"
         ariaHideApp={false}
       >
-        <p>Error Logging In. This Modal will close in {(2 ** timeoutExponent)} minutes.</p>
+        <p>Error Logging In. This Modal will close in {(2 ** timeoutExponent)} minute(s).</p>
       </Modal>
     </div>
   );
