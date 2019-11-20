@@ -5,6 +5,7 @@
 
 ### How to run:
 `emailScanner <emailID> <emailBody>`  
+__Ex.__  
 `emailScanner "my scamming cousin" "hey buddy"`  
 __OR__  
 `emailScanner` //Then the program will query you for the info  
