@@ -5,9 +5,7 @@
 
 ### How to run:
 `sqlScanner <username> <password>`  
-
 __Ex.__  
-
 `sqlScanner "mr scammer" "admin`  
 __OR__  
 `sqlScanner` //Then the program will query you for the info    
