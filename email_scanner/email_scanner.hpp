@@ -24,6 +24,16 @@ namespace email_scanner
 
         // Tests
         bool sampleTest(void);
+        void personalInfoTest(void); 
+        void indirectAddressTest(void); 
+        void symbolsDomainTest(void);
+        void badTopLevelDomainTest(void);
+        void uncommonTopLevelDomainTest(void);
+        void askForClickTest(void); 
+        void attachmentTest(void);
+        void fearWordsTest(void);
+        void curiosityWordsTest(void);
+        void commonPhisingWordsTest(void);
 
 
     private:
@@ -31,7 +41,7 @@ namespace email_scanner
         std::string m_body;
         double m_score{0};
         std::vector<std::string> m_alerts;
-        const static int m_NUM_TESTS = 1;
+        const static int m_NUM_TESTS = 10;
     };
 
     EmailReport scanEmail(std::string emailID, std::string emailBody);

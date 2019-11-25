@@ -24,6 +24,16 @@ namespace sql_scanner
 
         // Tests
         bool sampleTest(void);
+        void commentsTest(void);
+        void loginBypassTest(void);
+        void usernameTautologyTest(void);
+        void passwordTautologyTest(void);
+        void logicallyIncorrectTest(void);
+        void unionTest(void);
+        void piggyBackTest(void);
+        void storedProceduresTest(void);
+        void inferenceTest(void);
+        void alternateEncodingTest(void);
 
 
     private:
@@ -31,7 +41,7 @@ namespace sql_scanner
         std::string m_password;
         double m_score{0};
         std::vector<std::string> m_alerts;
-        const static int m_NUM_TESTS = 1;
+        const static int m_NUM_TESTS = 10; 
     };
 
     SqlReport scanSql(std::string username, std::string password);
