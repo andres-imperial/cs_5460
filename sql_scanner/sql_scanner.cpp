@@ -10,14 +10,28 @@
 
 namespace sql_scanner
 {
+    const int LOW = 25;
+    const int MED = 50;
+    const int HIGH = 100;
+
     SqlReport::SqlReport(std::string username, std::string password)
         : m_username(username), m_password(password)
     {
     }
 
+    SqlReport::SqlReport(std::string itemName)
+        : m_itemName(itemName)
+    {      
+    }
+
     void SqlReport::print(void)
     {
-        printf("This sql has a %i%% chance of being a malicious sql.\n", getScore());
+        printf("This sql has a score of %i.\n"
+               "Score Scale:\n"
+               "Low malicious intent 0 - %i\n"
+               "Med malicious intent %i - %i\n"
+               "High malicious intent %i and greater\n"
+               ,m_score,MED, MED, HIGH, HIGH);
 
         if (m_score > 0)
         {
@@ -34,25 +48,60 @@ namespace sql_scanner
     void SqlReport::scan(void)
     {
         // Run sql through tests and build score for it.
-        sampleTest();
-        commentsTest();
-        loginBypassTest();
-        usernameTautologyTest();
-        passwordTautologyTest();
-        logicallyIncorrectTest();
-        unionTest();
-        piggyBackTest();
-        storedProceduresTest();
-        inferenceTest();
-        alternateEncodingTest();
+        if (m_itemName.empty())
+        {
+            scanLogin();
+        }
+        else
+        {
+            scanItem();
+        }
     }
 
-    bool SqlReport::sampleTest(void)
+    void SqlReport::scanLogin(void)
     {
-        if (m_username.find("scam") != std::string::npos)
+        sampleTest(m_username, "Username");
+        commentsTest(m_username, "Username");
+        loginBypassTest(m_username, "Username");
+        tautologyTest(m_username, "Username");
+        logicallyIncorrectTest(m_username, "Username");
+        unionTest(m_username, "Username");
+        piggyBackTest(m_username, "Username");
+        storedProceduresTest(m_username, "Username");
+        inferenceTest(m_username, "Username");
+        alternateEncodingTest(m_username, "Username");
+
+        sampleTest(m_password, "Password");
+        commentsTest(m_password, "Password");
+        loginBypassTest(m_password, "Password");
+        tautologyTest(m_password, "Password");
+        logicallyIncorrectTest(m_password, "Password");
+        unionTest(m_password, "Password");
+        piggyBackTest(m_password, "Password");
+        storedProceduresTest(m_password, "Password");
+        inferenceTest(m_password, "Password");
+        alternateEncodingTest(m_password, "Password");
+    }
+
+    void SqlReport::scanItem(void)
+    {
+        sampleTest(m_itemName, "Item name");
+        commentsTest(m_itemName, "Item name");
+        loginBypassTest(m_itemName, "Item name");
+        tautologyTest(m_itemName, "Item name");
+        logicallyIncorrectTest(m_itemName, "Item name");
+        unionTest(m_itemName, "Item name");
+        piggyBackTest(m_itemName, "Item name");
+        storedProceduresTest(m_itemName, "Item name");
+        inferenceTest(m_itemName, "Item name");
+        alternateEncodingTest(m_itemName, "Item name");
+    }
+
+    bool SqlReport::sampleTest(const std::string value, const std::string type)
+    {
+        if (value.find("scam") != std::string::npos)
         {
-            ++m_score;
-            m_alerts.push_back("Username contains word 'scam'.\n");
+            m_alerts.push_back(type + " contains word 'scam'.\n");
             return true;
         }
 
@@ -60,208 +109,156 @@ namespace sql_scanner
     }
 
     // This test looks for potential injections with comments
-     void SqlReport::commentsTest(void)
+     void SqlReport::commentsTest(const std::string value, const std::string type)
     {
         std::vector<std::string> keyWords = {"--", "/*", "*/"};
         for (std::string str : keyWords)
         {
-            if (m_username.find(str) != std::string::npos)
+            if (value.find(str) != std::string::npos)
             {
-                ++m_score;
-                m_alerts.push_back("Username contains possible sql comment '" + str + "'.\n");
-            }
-            if (m_password.find(str) != std::string::npos)
-            {
-            ++m_score;
-            m_alerts.push_back("Password contains possible comment '" + str + "'.\n");
+                m_score += MED;
+                m_alerts.push_back(type + " contains possible sql comment '" + str + "'.\n");
             }
         }
     }
 
     // This test looks for potential login bypass keywords
-     void SqlReport::loginBypassTest(void)
+    /*Need to remove spaces in this one*/
+     void SqlReport::loginBypassTest(const std::string value, const std::string type)
     {
         std::vector<std::string> keyWords = {"admin'--", "admin' #", "admin'/*", "' or 1=1--", "' or 1=1#", "' or 1=1/*", "') or '1'='1--", ") or ('1'='1--"};
         for (std::string str : keyWords)
         {
-            if(m_username.find(str) != std::string::npos)
+            if(value.find(str) != std::string::npos)
             {
-                m_score++;
-                m_alerts.push_back("Username may contain a bypass login injection '" + str + "'.\n");
-            }
-            if(m_password.find(str) != std::string::npos)
-            {
-                m_score++;
-                m_alerts.push_back("Password may contain a bypass login injection '" + str + "'.\n");
+                m_score += HIGH;
+                m_alerts.push_back(type + " may contain a bypass login injection '" + str + "'.\n");
             }
         }
     }
 
     // This test looks for potential tautologies in the username 'x=x' 
-    void SqlReport::usernameTautologyTest()
+    void SqlReport::tautologyTest(const std::string value, const std::string type)
     {
-        if (m_username.find("=") != std::string::npos)
+        if (value.find("=") != std::string::npos)
         {
-            int numEquals = std::count(m_username.begin(), m_username.end(), '=');
+            int numEquals = std::count(value.begin(), value.end(), '=');
 
-            std::string tempUsername = m_username;
+            std::string tempValue = value;
             for (int i = 0; i < numEquals; i++)
             {
-                size_t found = tempUsername.find("=");
-                if(tempUsername[found - 1] == tempUsername[found + 1])
+                size_t found = tempValue.find("=");
+                if (found == 0 || found == tempValue.length())
+                {
+                    return;
+                }
+                while (tempValue[found -1] == ' ')
+                {
+                    tempValue.erase(found - 1, 1);
+                    --found;
+                }
+                while (tempValue[found +1] == ' ')
+                {
+                    tempValue.erase(found + 1, 1);
+                }
+                if(tempValue[found - 1] == tempValue[found + 1])
                 {
                     //we should only count the score once if a tautology is found but still look for others
-                    if (i == 0)
-                        ++m_score;
-                    std::string tautology = tempUsername.substr((found - 1), 3);
-                    m_alerts.push_back("Username contains a tautology '" + tautology + "'.\n");
+                    //if (i == 0)
+                        m_score += MED;
+                    std::string tautology = tempValue.substr((found - 1), 3);
+                    m_alerts.push_back(type + " contains a tautology '" + tautology + "'.\n");
                 }
-                std::string smaller = tempUsername.substr(found + 1, tempUsername.length());
-                tempUsername = smaller;
-            }
-        }
-    }
-
-    // This test looks for potential tautologies in the password 'x=x' 
-    void SqlReport::passwordTautologyTest()
-    {
-        if (m_password.find("=") != std::string::npos)
-        {
-            int numEquals = std::count(m_password.begin(), m_password.end(), '=');
-
-            std::string tempPassword = m_password;
-            for (int i = 0; i < numEquals; i++)
-            {
-                size_t found = tempPassword.find("=");
-                if(tempPassword[found - 1] == tempPassword[found + 1])
-                {
-                    //we should only count the score once if a tautology is found but still look for others
-                    if (i == 0)
-                        ++m_score;
-                    std::string tautology = tempPassword.substr((found - 1), 3);
-                    m_alerts.push_back("Password contains a tautology '" + tautology + "'.\n");
-                }
-                std::string smaller = tempPassword.substr(found + 1, tempPassword.length());
-                tempPassword = smaller;
+                std::string smaller = tempValue.substr(found + 1, tempValue.length() - (found +1));
+                tempValue = smaller;
+                std::cout << "Smaller: " << smaller << std::endl;
             }
         }
     }
 
     // This test looks for potential illegal/logically incorrect injection keywords 
-    void SqlReport::logicallyIncorrectTest()
+    void SqlReport::logicallyIncorrectTest(const std::string value, const std::string type)
     {
         std::vector<std::string> keyWords = {"sysobjects", "xtype='u'", "convert"};
         for (std::string str : keyWords)
         {
-            if(m_username.find(str) != std::string::npos)
+            if(value.find(str) != std::string::npos)
             {
-                m_score++;
-                m_alerts.push_back("Username may contain illegal or logically incorrect injection '" + str + "'.\n");
-            }
-            if(m_password.find(str) != std::string::npos)
-            {
-                m_score++;
-                m_alerts.push_back("Password may contain illegal or logically incorrect injection '" + str + "'.\n");
+                m_score += LOW;
+                m_alerts.push_back(type + " may contain illegal or logically incorrect injection '" + str + "'.\n");
             }
         }
     }
 
     // This test looks for potential union injection keywords
-    void SqlReport::unionTest()
+    void SqlReport::unionTest(const std::string value, const std::string type)
     {
         std::vector<std::string> keyWords = {"union", "=' '"};
         for (std::string str : keyWords)
         {
-            if(m_username.find(str) != std::string::npos)
+            if(value.find(str) != std::string::npos)
             {
-                m_score++;
-                m_alerts.push_back("Username may contain union injection '" + str + "'.\n");
-            }
-            if(m_password.find(str) != std::string::npos)
-            {
-                m_score++;
-                m_alerts.push_back("Password may contain union injection '" + str + "'.\n");
+                m_score += MED;
+                m_alerts.push_back(type + " may contain union injection '" + str + "'.\n");
             }
         }
     }
 
     // This test looks for potential piggy-back injection keywords
-    void SqlReport::piggyBackTest()
+    void SqlReport::piggyBackTest(const std::string value, const std::string type)
     {
         std::vector<std::string> keyWords = {";drop", "; select", "; alter", "; truncate", "; insert", "; update", "; where", "; delete", "; set", "; values"};
-        std::string tempUsername = m_username;
-        std::string tempPassword = m_password;
+        std::string tempValue = value;
         //remove the spaces for this test only
-        tempUsername.erase(remove(tempUsername.begin(), tempUsername.end(), ' '), tempUsername.end());
-        tempPassword.erase(remove(tempPassword.begin(), tempPassword.end(), ' '), tempPassword.end());
+        tempValue.erase(remove(tempValue.begin(), tempValue.end(), ' '), tempValue.end());
         for (std::string str : keyWords)
         {
-            if(tempUsername.find(str) != std::string::npos)
+            if(tempValue.find(str) != std::string::npos)
             {
-                m_score++;
-                m_alerts.push_back("Username may contain piggy-back injection '" + str + "'.\n");
-            }
-            if(tempPassword.find(str) != std::string::npos)
-            {
-                m_score++;
-                m_alerts.push_back("Password may contain piggy-back injection '" + str + "'.\n");
+                m_score += MED;
+                m_alerts.push_back(type + " may contain piggy-back injection '" + str + "'.\n");
             }
         }
     }
 
     // This test looks for potential stored procedures injection keywords 
-    void SqlReport::storedProceduresTest()
+    void SqlReport::storedProceduresTest(const std::string value, const std::string type)
     {
         std::vector<std::string> keyWords = {"exec", "shutdown"};
         for (std::string str : keyWords)
         {
-            if(m_username.find(str) != std::string::npos)
+            if(value.find(str) != std::string::npos)
             {
-                m_score++;
-                m_alerts.push_back("Username may contain stored procedure injection '" + str + "'.\n");
-            }
-            if(m_password.find(str) != std::string::npos)
-            {
-                m_score++;
-                m_alerts.push_back("Password may contain stored procedure injection '" + str + "'.\n");
+                m_score += HIGH;
+                m_alerts.push_back(type + " may contain stored procedure injection '" + str + "'.\n");
             }
         }
     }
 
     // This test looks for potential inference injection keywords
-    void SqlReport::inferenceTest()
+    void SqlReport::inferenceTest(const std::string value, const std::string type)
     {
         std::vector<std::string> keyWords = {"1=0--", "ascii(substring", "select top 1 name", "X WAITFOR"};
         for (std::string str : keyWords)
         {
-            if(m_username.find(str) != std::string::npos)
+            if(value.find(str) != std::string::npos)
             {
-                m_score++;
-                m_alerts.push_back("Username may contain inference injection '" + str + "'.\n");
-            }
-            if(m_password.find(str) != std::string::npos)
-            {
-                m_score++;
-                m_alerts.push_back("Password may contain inference injection '" + str + "'.\n");
+                m_score += LOW;
+                m_alerts.push_back(type + " may contain inference injection '" + str + "'.\n");
             }
         }
     }
 
     // This test looks for potential inference injection keywords
-    void SqlReport::alternateEncodingTest()
+    void SqlReport::alternateEncodingTest(const std::string value, const std::string type)
     {
         std::vector<std::string> keyWords = {"exec(char", "exec(shutdown"};
         for (std::string str : keyWords)
         {
-            if(m_username.find(str) != std::string::npos)
+            if(value.find(str) != std::string::npos)
             {
-                m_score++;
-                m_alerts.push_back("Username may contain alternate encoding injection '" + str + "'.\n");
-            }
-            if(m_password.find(str) != std::string::npos)
-            {
-                m_score++;
-                m_alerts.push_back("Password may contain alternate encoding injection '" + str + "'.\n");
+                m_score += HIGH;
+                m_alerts.push_back(type + " may contain alternate encoding injection '" + str + "'.\n");
             }
         }
     }
@@ -269,6 +266,15 @@ namespace sql_scanner
     SqlReport scanSql(std::string username, std::string password)
     {
         SqlReport report(username, password);
+
+        report.scan();
+
+        return report;
+    }
+
+    SqlReport scanSql(std::string itemName)
+    {
+        SqlReport report(itemName);
 
         report.scan();
 

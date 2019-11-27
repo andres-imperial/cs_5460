@@ -8,6 +8,10 @@
 
 namespace email_scanner
 {
+    const int LOW = 10;
+    const int MED = 20;
+    const int HIGH = 40;
+
     EmailReport::EmailReport(std::string emailID, std::string emailBody)
         : m_ID(emailID), m_body(emailBody)
     {
@@ -15,11 +19,16 @@ namespace email_scanner
 
     void EmailReport::print(void)
     {
-        printf("This email has a %i%% chance of being a phishing email.\n", getScore());
+        printf("This email has a score of %i.\n"
+               "Score Scale:\n"
+               "Low malicious intent 0 - %i\n"
+               "Med malicious intent %i - %i\n"
+               "High malicious intent %i and greater\n"
+               ,m_score,50, 50, 100, 100);
 
         if (m_score > 0)
         {
-            printf("The following reason attributed to this emails phishing score:\n");
+            printf("The following reason(s) attributed to this sql's malicious score:\n");
             int counter{1};
             for(auto alert : m_alerts)
             {
@@ -42,7 +51,7 @@ namespace email_scanner
         attachmentTest();
         fearWordsTest();
         curiosityWordsTest();
-        commonPhisingWordsTest();
+        commonPhishingWordsTest();
     }
 
     bool EmailReport::sampleTest(void)
@@ -65,7 +74,7 @@ namespace email_scanner
         {
             if(m_body.find(str) != std::string::npos)
             {
-                ++m_score;
+                m_score += MED;
                 m_alerts.push_back("Email may be asking for personal information '" + str + "'.\n");
             }
         }
@@ -79,7 +88,7 @@ namespace email_scanner
         {
             if(m_body.find(str) != std::string::npos)
             {
-                ++m_score;
+                m_score += LOW;
                 m_alerts.push_back("Email may be indirectly addressing the recipient '" + str + "'.\n");
             }
         }
@@ -104,7 +113,7 @@ namespace email_scanner
         {
             if(domain.find(str) != std::string::npos)
             {
-                ++m_score;
+                m_score += HIGH;
                 m_alerts.push_back("Domain name " + domain + " contains suspicious symbols '" + str + "'.\n");
             }
         }
@@ -129,7 +138,7 @@ namespace email_scanner
         {
             if(domain.find(str) != std::string::npos)
             {
-                ++m_score;
+                m_score += HIGH;
                 m_alerts.push_back("Domain name " + domain + " may contain a known shady top level domain '" + str + "'.\n");
             }
         }
@@ -160,12 +169,12 @@ namespace email_scanner
         }
         if (foundGood > 1)
         {
-            ++m_score;
+            m_score += MED;
             m_alerts.push_back("Domain name " + domain + " has multiple top level domains.\n");
         }
         else if (foundGood == 0)
         {
-            ++m_score;
+            m_score += LOW;
             m_alerts.push_back("Domain name " + domain + " doesn't contain a well known top level domain.\n");
         }
     }
@@ -173,12 +182,12 @@ namespace email_scanner
     // This test looks for 9 potential phishing click bait words/phrases
     void EmailReport::askForClickTest(void)
     {
-        std::vector<std::string> clickPrompts = {"click here", "url", "website", "tell me more", "get it now", "get it here", "click to view", "download", "click for"};
+        std::vector<std::string> clickPrompts = {"click", "url", "website", "tell me more", "get it now", "get it here", "download"};
         for (std::string str : clickPrompts)
         {
             if(m_body.find(str) != std::string::npos)
             {
-                ++m_score;
+                m_score += MED;
                 m_alerts.push_back("Email may be using click bait '" + str + "'.\n");
             }
         }
@@ -187,12 +196,12 @@ namespace email_scanner
     // This test looks for 8 potential attachment phishing words/phrases
     void EmailReport::attachmentTest(void)
     {
-        std::vector<std::string> attachWords = {"attached", "attachment", "attach", "included", "pdf", "doc", "exe", "pif", };
+        std::vector<std::string> attachWords = {"attached", "attachment", "included", "pdf", "doc", "exe", "pif"};
         for (std::string str : attachWords)
         {
             if(m_body.find(str) != std::string::npos)
             {
-                ++m_score;
+                m_score += LOW;
                 m_alerts.push_back("Email may contain an attachment '" + str + "'.\n");
             }
         }
@@ -206,7 +215,7 @@ namespace email_scanner
         {
             if(m_body.find(str) != std::string::npos)
             {
-                ++m_score;
+                m_score += HIGH;
                 m_alerts.push_back("Email contains words or phrases used to strike fear '" + str + "'.\n");
             }
         }
@@ -215,26 +224,26 @@ namespace email_scanner
     // This test looks for 15 potential phishing words/phrases used to strike curiosity
     void EmailReport::curiosityWordsTest(void)
     {
-        std::vector<std::string> curiousityWords = {"easy", "secret", "free", "win", "winner", "you won", "fool-proof", "faith", "faithful", "research-backed", "guaranteed", "trustworthy", "trust me", "science", "promise"};
+        std::vector<std::string> curiousityWords = {"easy", "secret", "free", "win", "winner", "you won", "fool-proof", "faith", "research-backed", "guaranteed", "trustworthy", "trust me", "science"};
         for (std::string str : curiousityWords)
         {
             if(m_body.find(str) != std::string::npos)
             {
-                ++m_score;
+                m_score += MED;
                 m_alerts.push_back("Email contains words or phrases used to spark curiosity '" + str + "'.\n");
             }
         }
     }
 
     // This test looks for 17 most common phishing words
-    void EmailReport::commonPhisingWordsTest(void)
+    void EmailReport::commonPhishingWordsTest(void)
     {
         std::vector<std::string> phishingWords = {"label", "invoice", "post", "document", "postal", "calculations", "copy", "fedex", "statement", "financial", "dhl", "usps", "notification", "irs", "ups", "delivery", "ticket"};
         for (std::string str : phishingWords)
         {
             if(m_body.find(str) != std::string::npos)
             {
-                ++m_score;
+                m_score += LOW;
                 m_alerts.push_back("Email contains common phishing word '" + str + "'.\n");
             }
         }
