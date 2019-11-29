@@ -207,7 +207,7 @@ namespace sql_scanner
     // This test looks for potential piggy-back injection keywords
     void SqlReport::piggyBackTest(const std::string value, const std::string type)
     {
-        std::vector<std::string> keyWords = {";drop", "; select", "; alter", "; truncate", "; insert", "; update", "; where", "; delete", "; set", "; values"};
+        std::vector<std::string> keyWords = {"; drop", "; select", "; alter", "; truncate", "; insert", "; update", "; where", "; delete", "; set", "; values"};
         std::string tempValue = value;
         //remove the spaces for this test only
         tempValue.erase(remove(tempValue.begin(), tempValue.end(), ' '), tempValue.end());

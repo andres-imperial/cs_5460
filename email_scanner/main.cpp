@@ -6,6 +6,7 @@
 #include <stdexcept>
 #include <string> 
 #include <iostream>
+#include <bits/stdc++.h>
 
 #include "email_scanner.hpp"
 
@@ -22,8 +23,10 @@ int main(int argc, char *argv[])
         // Query user for arguments
         printf("Enter emailer's ID:");
         std::getline(std::cin, emailID);
+        std::transform(emailID.begin(), emailID.end(), emailID.begin(), ::tolower);
         printf("Enter email's body:");
         std::getline(std::cin, emailBody);
+        std::transform(emailBody.begin(), emailBody.end(), emailBody.begin(), ::tolower);
     }
     else
     {
