@@ -6,7 +6,8 @@
 #include <stdexcept>
 #include <string> 
 #include <iostream>
-#include <bits/stdc++.h> 
+#include <bits/stdc++.h>
+
 #include "email_scanner.hpp"
 
 namespace es = email_scanner;
