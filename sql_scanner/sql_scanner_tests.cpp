@@ -110,7 +110,7 @@ BOOST_AUTO_TEST_CASE(unionTest)
 
 BOOST_AUTO_TEST_CASE(piggyBackTest)
 {
-    std::vector<std::string> keyWords = {";drop", "; select", "; alter", "; truncate", "; insert", "; update", "; where", "; delete", "; set", "; values"};
+    std::vector<std::string> keyWords = {"; drop", "; select", "; alter", "; truncate", "; insert", "; update", "; where", "; delete", "; set", "; values"};
 
     for (auto& keyWord : keyWords) 
     {
