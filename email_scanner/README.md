@@ -16,3 +16,6 @@ __OR__
 3. If your test is positive increment m_score  
 3. Increment m_NUM_TESTS in email_scanner.hpp  
 
+### How to run unit tests:
+You will need boost, can be installed on linux with `sudo apt install libboost-test-dev`
+Compile and run: `g++ email_scanner_tests.cpp email_scanner.cpp -lboost_unit_test_framework -o test && ./test`

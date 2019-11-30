@@ -31,6 +31,8 @@ namespace email_scanner
         void curiosityWordsTest(void);
         void commonPhishingWordsTest(void);
 
+        std::vector<std::string> getAlerts() { return m_alerts; }
+        int getScore() { return m_score; }
 
     private:
         std::string m_ID;

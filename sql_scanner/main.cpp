@@ -6,6 +6,7 @@
 #include <stdexcept>
 #include <string> 
 #include <iostream>
+#include <climits>
 #include <bits/stdc++.h> 
 
 #include "sql_scanner.hpp"
