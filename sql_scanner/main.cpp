@@ -7,6 +7,7 @@
 #include <string> 
 #include <iostream>
 #include <climits>
+#include <bits/stdc++.h> 
 
 #include "sql_scanner.hpp"
 
@@ -42,13 +43,16 @@ int main(int argc, char *argv[])
             // Query user for arguments
             printf("Enter username:");
             std::getline(std::cin, username);
+            std::transform(username.begin(), username.end(), username.begin(), ::tolower);
             printf("Enter password:");
             std::getline(std::cin, password);
+            std::transform(password.begin(), password.end(), password.begin(), ::tolower);
         }
         else if (userChoice == 2)
         {
             printf("Enter Item:");
             std::getline(std::cin, itemName);
+            std::transform(itemName.begin(), itemName.end(), itemName.begin(), ::tolower);
         }
     }
 
