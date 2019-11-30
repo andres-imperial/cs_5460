@@ -33,6 +33,8 @@ namespace sql_scanner
         void inferenceTest(const std::string value, const std::string type);
         void alternateEncodingTest(const std::string value, const std::string type);
 
+        std::vector<std::string> getAlerts() { return m_alerts; }
+        int getScore() { return m_score; }
 
     private:
         std::string m_username;

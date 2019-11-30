@@ -167,3 +167,142 @@ BOOST_AUTO_TEST_CASE(badTopLevelDomainTest)
         BOOST_CHECK_EQUAL(testm_Score, 40);
     }
 }
+
+BOOST_AUTO_TEST_CASE(noGoodUncommonTopLevelDomainTest)
+{
+    std::string notGoodDomain("bankofamerica.tl");
+    std::vector<std::string> alerts = {"Domain name " + notGoodDomain + " doesn't contain a well known top level domain.\n"};
+    es::EmailReport test("johndoe@" + notGoodDomain, "");
+    test.uncommonTopLevelDomainTest();
+    auto testm_Alerts = test.getAlerts();
+    auto testm_Score = test.getScore();
+    BOOST_CHECK_EQUAL_COLLECTIONS(alerts.begin(), alerts.end(), testm_Alerts.begin(), testm_Alerts.end());
+    BOOST_CHECK_EQUAL(testm_Score, 10);
+}
+
+BOOST_AUTO_TEST_CASE(uncommonTopLevelDomainTest)
+{
+    std::vector<std::string> goodTLDs = {".com", ".org", ".ru", ".de", ".net", ".com.br", ".ir", ".co.uk", ".pl", ".it"};
+
+    for (auto tld = 0; tld < goodTLDs.size() - 1; tld++)
+    {
+        std::string domain("bankofamerica" + goodTLDs[tld] + goodTLDs[tld + 1]);
+        es::EmailReport test("johndoe@" + domain, "");
+        std::vector<std::string> alerts = {"Domain name " + domain + " has multiple top level domains.\n"};
+        test.uncommonTopLevelDomainTest();
+        auto testm_Alerts = test.getAlerts();
+        auto testm_Score = test.getScore();
+        BOOST_CHECK_EQUAL_COLLECTIONS(alerts.begin(), alerts.end(), testm_Alerts.begin(), testm_Alerts.end());
+        BOOST_CHECK_EQUAL(testm_Score, 20);
+    }
+}
+
+BOOST_AUTO_TEST_CASE(askForClickTest)
+{
+    es::EmailReport test("", "click the link titled get it here below to navigate to the download page for your free website! You can get it now with the provided personal url.");
+
+    std::vector<std::string> alerts;
+    alerts.push_back("Email may be using click bait 'click'.\n");
+    alerts.push_back("Email may be using click bait 'url'.\n");
+    alerts.push_back("Email may be using click bait 'website'.\n");
+    alerts.push_back("Email may be using click bait 'get it now'.\n");
+    alerts.push_back("Email may be using click bait 'get it here'.\n");
+    alerts.push_back("Email may be using click bait 'download'.\n");
+
+    test.askForClickTest();
+    auto testm_Alerts = test.getAlerts();
+    auto testm_Score = test.getScore();
+    BOOST_CHECK_EQUAL_COLLECTIONS(alerts.begin(), alerts.end(), testm_Alerts.begin(), testm_Alerts.end());
+    BOOST_CHECK_EQUAL(testm_Score, 120);
+}
+
+BOOST_AUTO_TEST_CASE(attachmentTest)
+{
+    es::EmailReport test("", "Hi, please check the included pdf, doc, and pif items to view the desired attachment as requested by you on 4/6/18");
+
+    std::vector<std::string> alerts;
+    alerts.push_back("Email may contain an attachment 'attachment'.\n");
+    alerts.push_back("Email may contain an attachment 'included'.\n");
+    alerts.push_back("Email may contain an attachment 'pdf'.\n");
+    alerts.push_back("Email may contain an attachment 'doc'.\n");
+    alerts.push_back("Email may contain an attachment 'pif'.\n");
+
+    test.attachmentTest();
+    auto testm_Alerts = test.getAlerts();
+    auto testm_Score = test.getScore();
+    BOOST_CHECK_EQUAL_COLLECTIONS(alerts.begin(), alerts.end(), testm_Alerts.begin(), testm_Alerts.end());
+    BOOST_CHECK_EQUAL(testm_Score, 50);
+}
+
+BOOST_AUTO_TEST_CASE(fearWordsTest)
+{
+    es::EmailReport test("", "It appears that you have a compromised balance that is overdue. If you have any delinquent accounts left unpaid by the end of the week, you are in danger of being caught and we will turn you in. you must act now, if you don't, we will be unable to help you.");
+
+    std::vector<std::string> alerts;
+    alerts.push_back("Email contains words or phrases used to strike fear 'you must'.\n");
+    alerts.push_back("Email contains words or phrases used to strike fear 'act now'.\n");
+    alerts.push_back("Email contains words or phrases used to strike fear 'compromised'.\n");
+    alerts.push_back("Email contains words or phrases used to strike fear 'caught'.\n");
+    alerts.push_back("Email contains words or phrases used to strike fear 'danger'.\n");
+    alerts.push_back("Email contains words or phrases used to strike fear 'overdue'.\n");
+    alerts.push_back("Email contains words or phrases used to strike fear 'unpaid'.\n");
+    alerts.push_back("Email contains words or phrases used to strike fear 'delinquent'.\n");
+    alerts.push_back("Email contains words or phrases used to strike fear 'turn you in'.\n");
+    alerts.push_back("Email contains words or phrases used to strike fear 'if you don't'.\n");
+
+    test.fearWordsTest();
+    auto testm_Alerts = test.getAlerts();
+    auto testm_Score = test.getScore();
+    BOOST_CHECK_EQUAL_COLLECTIONS(alerts.begin(), alerts.end(), testm_Alerts.begin(), testm_Alerts.end());
+    BOOST_CHECK_EQUAL(testm_Score, 400);
+}
+
+BOOST_AUTO_TEST_CASE(curiosityWordsTest)
+{
+    es::EmailReport test("", "You have win and are the winner of a new fool-proof research-backed treatment. It is from a trustworthy source that will cure your illness guaranteed. trust me, the science behind this is not based on faith, but on a new secret and easy yet simple procedure that not just anyone is able to acquire.");
+
+    std::vector<std::string> alerts;
+    alerts.push_back("Email contains words or phrases used to spark curiosity 'easy'.\n");
+    alerts.push_back("Email contains words or phrases used to spark curiosity 'secret'.\n");
+    alerts.push_back("Email contains words or phrases used to spark curiosity 'win'.\n");
+    alerts.push_back("Email contains words or phrases used to spark curiosity 'winner'.\n");
+    alerts.push_back("Email contains words or phrases used to spark curiosity 'fool-proof'.\n");
+    alerts.push_back("Email contains words or phrases used to spark curiosity 'faith'.\n");
+    alerts.push_back("Email contains words or phrases used to spark curiosity 'research-backed'.\n");
+    alerts.push_back("Email contains words or phrases used to spark curiosity 'guaranteed'.\n");
+    alerts.push_back("Email contains words or phrases used to spark curiosity 'trustworthy'.\n");
+    alerts.push_back("Email contains words or phrases used to spark curiosity 'trust me'.\n");
+    alerts.push_back("Email contains words or phrases used to spark curiosity 'science'.\n");
+
+    test.curiosityWordsTest();
+    auto testm_Alerts = test.getAlerts();
+    auto testm_Score = test.getScore();
+    BOOST_CHECK_EQUAL_COLLECTIONS(alerts.begin(), alerts.end(), testm_Alerts.begin(), testm_Alerts.end());
+    BOOST_CHECK_EQUAL(testm_Score, 220);
+}
+
+BOOST_AUTO_TEST_CASE(commonPhishingWordsTest)
+{
+    es::EmailReport test("", "Included below is your invoice of $5000 payable to you via postal service or other common delivery services such as ups, fedex, dhl, or usps. Please view the document that contains the shipping label, and feel free to check the calculations before making a copy. Your ticket will be given from a post afterwords.");
+
+    std::vector<std::string> alerts;
+    alerts.push_back("Email contains common phishing word 'label'.\n");
+    alerts.push_back("Email contains common phishing word 'invoice'.\n");
+    alerts.push_back("Email contains common phishing word 'post'.\n");
+    alerts.push_back("Email contains common phishing word 'document'.\n");
+    alerts.push_back("Email contains common phishing word 'postal'.\n");
+    alerts.push_back("Email contains common phishing word 'calculations'.\n");
+    alerts.push_back("Email contains common phishing word 'copy'.\n");
+    alerts.push_back("Email contains common phishing word 'fedex'.\n");
+    alerts.push_back("Email contains common phishing word 'dhl'.\n");
+    alerts.push_back("Email contains common phishing word 'usps'.\n");
+    alerts.push_back("Email contains common phishing word 'ups'.\n");
+    alerts.push_back("Email contains common phishing word 'delivery'.\n");
+    alerts.push_back("Email contains common phishing word 'ticket'.\n");
+
+    test.commonPhishingWordsTest();
+    auto testm_Alerts = test.getAlerts();
+    auto testm_Score = test.getScore();
+    BOOST_CHECK_EQUAL_COLLECTIONS(alerts.begin(), alerts.end(), testm_Alerts.begin(), testm_Alerts.end());
+    BOOST_CHECK_EQUAL(testm_Score, 130);
+}

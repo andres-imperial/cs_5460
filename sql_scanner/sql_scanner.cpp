@@ -165,13 +165,12 @@ namespace sql_scanner
                 {
                     //we should only count the score once if a tautology is found but still look for others
                     //if (i == 0)
-                        m_score += MED;
+                    m_score += MED;
                     std::string tautology = tempValue.substr((found - 1), 3);
                     m_alerts.push_back(type + " contains a tautology '" + tautology + "'.\n");
                 }
                 std::string smaller = tempValue.substr(found + 1, tempValue.length() - (found +1));
                 tempValue = smaller;
-                std::cout << "Smaller: " << smaller << std::endl;
             }
         }
     }
@@ -209,8 +208,6 @@ namespace sql_scanner
     {
         std::vector<std::string> keyWords = {";drop", "; select", "; alter", "; truncate", "; insert", "; update", "; where", "; delete", "; set", "; values"};
         std::string tempValue = value;
-        //remove the spaces for this test only
-        tempValue.erase(remove(tempValue.begin(), tempValue.end(), ' '), tempValue.end());
         for (std::string str : keyWords)
         {
             if(tempValue.find(str) != std::string::npos)
