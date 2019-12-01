@@ -64,6 +64,7 @@ namespace sql_scanner
         commentsTest(m_username, "Username");
         loginBypassTest(m_username, "Username");
         tautologyTest(m_username, "Username");
+        contradictionTest(m_username, "Username");
         logicallyIncorrectTest(m_username, "Username");
         unionTest(m_username, "Username");
         piggyBackTest(m_username, "Username");
@@ -75,6 +76,7 @@ namespace sql_scanner
         commentsTest(m_password, "Password");
         loginBypassTest(m_password, "Password");
         tautologyTest(m_password, "Password");
+        contradictionTest(m_password, "Password");
         logicallyIncorrectTest(m_password, "Password");
         unionTest(m_password, "Password");
         piggyBackTest(m_password, "Password");
@@ -89,6 +91,7 @@ namespace sql_scanner
         commentsTest(m_itemName, "Item name");
         loginBypassTest(m_itemName, "Item name");
         tautologyTest(m_itemName, "Item name");
+        contradictionTest(m_itemName, "Item name");
         logicallyIncorrectTest(m_itemName, "Item name");
         unionTest(m_itemName, "Item name");
         piggyBackTest(m_itemName, "Item name");
@@ -137,7 +140,7 @@ namespace sql_scanner
         }
     }
 
-    // This test looks for potential tautologies in the username 'x=x' 
+    // This test looks for potential tautologies (example: 'x=x')
     void SqlReport::tautologyTest(const std::string value, const std::string type)
     {
         if (value.find("=") != std::string::npos)
@@ -152,22 +155,84 @@ namespace sql_scanner
                 {
                     return;
                 }
-                while (tempValue[found -1] == ' ')
+                size_t lower = found -1;
+                size_t upper = found +1;
+                size_t size = 0;
+                while (tempValue[lower] != ' ' && lower > 0)
                 {
-                    tempValue.erase(found - 1, 1);
-                    --found;
+                    lower--;
+                    size++;
                 }
-                while (tempValue[found +1] == ' ')
+                while( tempValue[upper]!= ' ')
                 {
-                    tempValue.erase(found + 1, 1);
+                    upper++;
                 }
-                if(tempValue[found - 1] == tempValue[found + 1])
+                std::string before = "";
+                std::string after = "";
+                if(lower == 0)
                 {
-                    //we should only count the score once if a tautology is found but still look for others
-                    //if (i == 0)
+                    before = tempValue.substr(lower, size + 1);
+                    after = tempValue.substr(found + 1 , size + 1);
+                }
+                else
+                {
+                    before = tempValue.substr(lower + 1, size);
+                    after = tempValue.substr(found + 1 , size);
+                }
+                if(before == after)
+                {
                     m_score += MED;
-                    std::string tautology = tempValue.substr((found - 1), 3);
+                    std::string tautology = before + "=" + after;
                     m_alerts.push_back(type + " contains a tautology '" + tautology + "'.\n");
+                }
+                std::string smaller = tempValue.substr(found + 1, tempValue.length() - (found +1));
+                tempValue = smaller;
+            }
+        }
+    }
+
+    // This test looks for potential contradictions (example: '1=0') 
+    void SqlReport::contradictionTest(const std::string value, const std::string type)
+    {
+        if (value.find("=") != std::string::npos)
+        {
+            int numEquals = std::count(value.begin(), value.end(), '=');
+
+            std::string tempValue = value;
+            for (int i = 0; i < numEquals; i++)
+            {
+                size_t found = tempValue.find("=");
+                if (found == 0 || found == tempValue.length())
+                {
+                    return;
+                }
+                size_t lower = found -1;
+                size_t upper = found +1;
+                size_t size = 0;
+                while (tempValue[lower] != ' ' && lower > 0)
+                {
+                    lower--;
+                    size++;
+                }
+                while( tempValue[upper]!= ' ')
+                {
+                    upper++;
+                }
+                std::string before = "";
+                if(lower == 0)
+                {
+                    before = tempValue.substr(lower, size);
+                }
+                else
+                {
+                    before = tempValue.substr(lower + 1, size);
+                }
+                std::string after = tempValue.substr(found + 1 , size);
+                if(before != after)
+                {
+                    m_score += MED;
+                    std::string contradiction = before + "=" + after;
+                    m_alerts.push_back(type + " contains a contradiction '" + contradiction + "'.\n");
                 }
                 std::string smaller = tempValue.substr(found + 1, tempValue.length() - (found +1));
                 tempValue = smaller;
