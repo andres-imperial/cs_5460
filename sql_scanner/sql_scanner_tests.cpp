@@ -55,15 +55,34 @@ BOOST_AUTO_TEST_CASE(loginBypassTest)
 
 BOOST_AUTO_TEST_CASE(tautologyTest)
 {
-    std::string itemName("SELECT name from table1 where 1=1 and x=x");
+    std::string itemName("SELECT name from table1 where 1=1 and x=x and yellow=yellow");
     sql::SqlReport test(itemName);
 
     std::vector<std::string> alerts;
 
     alerts.push_back("Item name contains a tautology '1=1'.\n");
     alerts.push_back("Item name contains a tautology 'x=x'.\n");
+    alerts.push_back("Item name contains a tautology 'yellow=yellow'.\n");
 
     test.tautologyTest(itemName, "Item name");
+    auto testm_Alerts = test.getAlerts();
+    auto testm_Score = test.getScore();
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(alerts.begin(), alerts.end(), testm_Alerts.begin(), testm_Alerts.end());
+    BOOST_CHECK_EQUAL(testm_Score, 150);
+}
+
+BOOST_AUTO_TEST_CASE(contradictionTest)
+{
+    std::string itemName("SELECT name from table1 where 1=0 and table=tavel");
+    sql::SqlReport test(itemName);
+
+    std::vector<std::string> alerts;
+
+    alerts.push_back("Item name contains a contradiction '1=0'.\n");
+    alerts.push_back("Item name contains a contradiction 'table=tavel'.\n");
+
+    test.contradictionTest(itemName, "Item name");
     auto testm_Alerts = test.getAlerts();
     auto testm_Score = test.getScore();
 
