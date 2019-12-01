@@ -26,6 +26,7 @@ namespace sql_scanner
         void commentsTest(const std::string value, const std::string type);
         void loginBypassTest(const std::string value, const std::string type);
         void tautologyTest(const std::string value, const std::string type);
+        void contradictionTest(const std::string value, const std::string type);
         void logicallyIncorrectTest(const std::string value, const std::string type);
         void unionTest(const std::string value, const std::string type);
         void piggyBackTest(const std::string value, const std::string type);
